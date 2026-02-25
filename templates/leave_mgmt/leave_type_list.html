@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block page_title %}Leave Types{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="text-muted mb-0">Configure Leave Policies</h5>
+    <a href="{% url 'leave_mgmt:type_create' %}" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-1"></i> Add Leave Type
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h6 class="m-0 fw-bold text-primary">
+            <i class="fa-solid fa-umbrella-beach me-2"></i>Existing Leave Types
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light">
+                  <tr>
+                    <th class="ps-4">Name</th>
+                    <th>Code</th>
+                    <th>Max Days/Year</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for lt in leave_types %}
+                <tr>
+                  <td class="ps-4 fw-medium">{{ lt.name }}</td>
+                  <td><span class="badge bg-light text-dark border">{{ lt.code|default:"-" }}</span></td>
+                  <td>{{ lt.max_days_per_year }} days</td>
+                  <td>
+                      {% if lt.is_active %}
+                        <span class="badge bg-success bg-opacity-10 text-success">Active</span>
+                      {% else %}
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary">Inactive</span>
+                      {% endif %}
+                  </td>
+                  <td class="text-end pe-4">
+                      <a href="{% url 'leave_mgmt:type_edit' lt.pk %}" class="btn btn-sm btn-outline-secondary">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                      </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">No leave types found.</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

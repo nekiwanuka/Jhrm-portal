@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block page_title %}Salary Structures{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:list' %}">Back to Payroll</a>
+  </div>
+  <div>
+    <a class="btn btn-primary" href="{% url 'payroll:structure_create' %}">Add Structure</a>
+  </div>
+</div>
+
+<div class="card"><div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th class="text-end">Basic</th>
+      <th class="text-end">Legacy Allowances</th>
+      <th class="text-end">Legacy Deductions</th>
+      <th>Currency</th>
+      <th>Active</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in structures %}
+      <tr>
+        <td>{{ s.employee.get_full_name|default:s.employee.username }}</td>
+        <td class="text-end">{{ s.basic_salary }}</td>
+        <td class="text-end">{{ s.allowances }}</td>
+        <td class="text-end">{{ s.deductions }}</td>
+        <td>{{ s.currency }}</td>
+        <td>{% if s.is_active %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'payroll:structure_edit' s.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">No salary structures yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div></div>
+{% endblock %}

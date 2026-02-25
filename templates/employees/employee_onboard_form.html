@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Add Employee{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="purpose-form-shell employee-onboard-form">
+  {% csrf_token %}
+  <input type="hidden" name="wizard_step" id="wizard-step-input" value="1">
+
+  <div class="form-steps" aria-label="Employee onboarding steps">
+    <div class="form-step is-active" data-step="1">
+      <span class="form-step-index">1</span>
+      <span class="form-step-label">Account Setup</span>
+    </div>
+    <div class="form-step" data-step="2">
+      <span class="form-step-index">2</span>
+      <span class="form-step-label">Personal & Job Details</span>
+    </div>
+    <div class="form-step" data-step="3">
+      <span class="form-step-index">3</span>
+      <span class="form-step-label">Banking & Submit</span>
+    </div>
+  </div>
+
+  <p class="purpose-form-subtitle mb-3">Create login credentials and complete the employee profile and HR records in one flow.</p>
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="wizard-page" data-page="1">
+    <h5 class="mb-3">Account Setup</h5>
+    <div class="row g-3 justify-content-center">
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Login Credentials</div>
+          <div class="card-body">
+            <div class="mb-3"><label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>{{ form.username }}{% for error in form.username.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-3"><label class="form-label" for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>{{ form.password1 }}{% for error in form.password1.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-0"><label class="form-label" for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>{{ form.password2 }}{% for error in form.password2.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Account Profile</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>{{ form.first_name }}{% for error in form.first_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>{{ form.last_name }}{% for error in form.last_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+            </div>
+            <div class="mb-3"><label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>{{ form.email }}{% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-3"><label class="form-label" for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>{{ form.phone_number }}{% for error in form.phone_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-3"><label class="form-label" for="{{ form.role.id_for_label }}">{{ form.role.label }}</label>{{ form.role }}{% for error in form.role.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-0"><label class="form-label" for="{{ form.photo.id_for_label }}">{{ form.photo.label }}</label>{{ form.photo }}{% for error in form.photo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wizard-page d-none" data-page="2">
+    <h5 class="mb-3">Personal & Job Details</h5>
+    <div class="row g-3 justify-content-center">
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Organization</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.employee_id.id_for_label }}">{{ form.employee_id.label }}</label>{{ form.employee_id }}{% for error in form.employee_id.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.primary_role.id_for_label }}">{{ form.primary_role.label }}</label>{{ form.primary_role }}{% if form.primary_role.help_text %}<div class="form-text">{{ form.primary_role.help_text }}</div>{% endif %}{% for error in form.primary_role.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+            </div>
+            <div class="mb-3"><label class="form-label" for="{{ form.department.id_for_label }}">{{ form.department.label }}</label>{{ form.department }}{% for error in form.department.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-0"><label class="form-label" for="{{ form.position.id_for_label }}">{{ form.position.label }}</label>{{ form.position }}{% for error in form.position.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Personal Identification</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.national_id.id_for_label }}">{{ form.national_id.label }}</label>{{ form.national_id }}{% for error in form.national_id.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.passport_number.id_for_label }}">{{ form.passport_number.label }}</label>{{ form.passport_number }}{% for error in form.passport_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.tin.id_for_label }}">{{ form.tin.label }}</label>{{ form.tin }}{% for error in form.tin.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.nssf_number.id_for_label }}">{{ form.nssf_number.label }}</label>{{ form.nssf_number }}{% for error in form.nssf_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.date_of_birth.id_for_label }}">{{ form.date_of_birth.label }}</label>{{ form.date_of_birth }}{% for error in form.date_of_birth.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.gender.id_for_label }}">{{ form.gender.label }}</label>{{ form.gender }}{% for error in form.gender.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-0"><label class="form-label" for="{{ form.marital_status.id_for_label }}">{{ form.marital_status.label }}</label>{{ form.marital_status }}{% for error in form.marital_status.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Employment</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.employment_type.id_for_label }}">{{ form.employment_type.label }}</label>{{ form.employment_type }}{% for error in form.employment_type.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>{{ form.status }}{% for error in form.status.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.date_hired.id_for_label }}">{{ form.date_hired.label }}</label>{{ form.date_hired }}{% for error in form.date_hired.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-0"><label class="form-label" for="{{ form.probation_end_date.id_for_label }}">{{ form.probation_end_date.label }}</label>{{ form.probation_end_date }}{% for error in form.probation_end_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Emergency Contact</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="mb-3"><label class="form-label" for="{{ form.emergency_contact_name.id_for_label }}">{{ form.emergency_contact_name.label }}</label>{{ form.emergency_contact_name }}{% for error in form.emergency_contact_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-0"><label class="form-label" for="{{ form.emergency_contact_phone.id_for_label }}">{{ form.emergency_contact_phone.label }}</label>{{ form.emergency_contact_phone }}{% for error in form.emergency_contact_phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wizard-page d-none" data-page="3">
+    <h5 class="mb-3">Banking & Submit</h5>
+    <div class="row g-3 justify-content-center">
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header">Banking</div>
+          <div class="card-body">
+            <div class="mb-3"><label class="form-label" for="{{ form.bank_name.id_for_label }}">{{ form.bank_name.label }}</label>{{ form.bank_name }}{% for error in form.bank_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-3"><label class="form-label" for="{{ form.bank_account_number.id_for_label }}">{{ form.bank_account_number.label }}</label>{{ form.bank_account_number }}{% for error in form.bank_account_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+            <div class="mb-0"><label class="form-label" for="{{ form.bank_branch.id_for_label }}">{{ form.bank_branch.label }}</label>{{ form.bank_branch }}{% for error in form.bank_branch.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-outline-secondary d-none" type="button" id="wizard-prev-btn">Previous Page</button>
+    <button class="btn btn-primary" type="button" id="wizard-next-btn">Save & Next Page</button>
+    <button class="btn btn-primary d-none" type="submit" id="wizard-submit-btn">Create User & Employee Profile</button>
+    <a class="btn btn-outline-secondary" href="{% url 'employees:list' %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const pages = Array.from(document.querySelectorAll('.wizard-page'));
+  const steps = Array.from(document.querySelectorAll('.form-step[data-step]'));
+  const prevBtn = document.getElementById('wizard-prev-btn');
+  const nextBtn = document.getElementById('wizard-next-btn');
+  const submitBtn = document.getElementById('wizard-submit-btn');
+  const stepInput = document.getElementById('wizard-step-input');
+
+  if (!pages.length || !prevBtn || !nextBtn || !submitBtn || !stepInput) {
+    return;
+  }
+
+  function getPageFieldIds(pageNumber) {
+    if (pageNumber === 1) {
+      return ['id_username', 'id_password1', 'id_password2', 'id_first_name', 'id_last_name', 'id_email', 'id_phone_number', 'id_role', 'id_photo'];
+    }
+    if (pageNumber === 2) {
+      return ['id_employee_id', 'id_department', 'id_position', 'id_primary_role', 'id_employment_type', 'id_date_hired', 'id_probation_end_date', 'id_status', 'id_national_id', 'id_passport_number', 'id_tin', 'id_nssf_number', 'id_date_of_birth', 'id_gender', 'id_marital_status', 'id_emergency_contact_name', 'id_emergency_contact_phone'];
+    }
+    return ['id_bank_name', 'id_bank_account_number', 'id_bank_branch'];
+  }
+
+  function setStep(stepNumber) {
+    pages.forEach((page, index) => {
+      page.classList.toggle('d-none', index !== stepNumber - 1);
+    });
+
+    steps.forEach((stepEl, index) => {
+      stepEl.classList.toggle('is-active', index + 1 <= stepNumber);
+    });
+
+    prevBtn.classList.toggle('d-none', stepNumber === 1);
+    nextBtn.classList.toggle('d-none', stepNumber === pages.length);
+    submitBtn.classList.toggle('d-none', stepNumber !== pages.length);
+    stepInput.value = String(stepNumber);
+  }
+
+  function firstInvalidFieldOnStep(stepNumber) {
+    const fieldIds = getPageFieldIds(stepNumber);
+    for (const fieldId of fieldIds) {
+      const field = document.getElementById(fieldId);
+      if (field && typeof field.checkValidity === 'function' && !field.checkValidity()) {
+        return field;
+      }
+    }
+    return null;
+  }
+
+  function stepFromErrors() {
+    for (let stepNumber = 1; stepNumber <= pages.length; stepNumber += 1) {
+      const fieldIds = getPageFieldIds(stepNumber);
+      for (const fieldId of fieldIds) {
+        const field = document.getElementById(fieldId);
+        if (!field) {
+          continue;
+        }
+        const fieldBlock = field.closest('.mb-3') || field.parentElement;
+        if (fieldBlock && fieldBlock.querySelector('.text-danger')) {
+          return stepNumber;
+        }
+      }
+    }
+    return 1;
+  }
+
+  let currentStep = stepFromErrors();
+  setStep(currentStep);
+
+  nextBtn.addEventListener('click', function () {
+    const invalidField = firstInvalidFieldOnStep(currentStep);
+    if (invalidField) {
+      invalidField.reportValidity();
+      invalidField.focus();
+      return;
+    }
+
+    currentStep = Math.min(currentStep + 1, pages.length);
+    setStep(currentStep);
+  });
+
+  prevBtn.addEventListener('click', function () {
+    currentStep = Math.max(currentStep - 1, 1);
+    setStep(currentStep);
+  });
+})();
+</script>
+{% endblock %}

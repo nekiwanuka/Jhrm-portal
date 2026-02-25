@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block page_title %}Public HR Portal{% endblock %}
+{% block content %}
+<div class="card landing-hero-card mt-3 mt-md-4 mb-5">
+    <div class="card-body landing-hero-body">
+        <div class="row align-items-center g-4">
+            <div class="col-12">
+                <h1 class="landing-title text-center mb-3">Jambas Imaging (U) LTD</h1>
+                <p class="landing-subtitle text-center mb-4">Empowering our team with streamlined HR solutions. Access public notices, track tasks, and view the company calendar with ease.</p>
+                <div class="landing-cta d-flex flex-wrap gap-2 justify-content-center">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg px-4 fw-semibold">Login to Portal</a>
+                    {% else %}
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg px-4 fw-semibold">Go to Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'noticeboard:list' %}" class="btn btn-outline-secondary btn-lg px-4">View Notices</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body p-4 text-center">
+                <div class="feature-icon text-primary">
+                     <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Company Notices</h5>
+                <p class="text-muted small mb-3">Stay updated with the latest announcements, policy changes, and company news.</p>
+                <a href="{% url 'noticeboard:list' %}" class="btn btn-outline-primary btn-sm stretched-link">View Notices</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body p-4 text-center">
+                <div class="feature-icon text-primary">
+                     <i class="fa-solid fa-list-check"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Task Management</h5>
+                <p class="text-muted small mb-3">Track project progress, check task status, and collaborate effectively.</p>
+                <a href="{% url 'tasks:board' %}" class="btn btn-outline-primary btn-sm stretched-link">View Tasks</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body p-4 text-center">
+                <div class="feature-icon text-primary">
+                     <i class="fa-regular fa-calendar-check"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Events Calendar</h5>
+                <p class="text-muted small mb-3">Keep track of upcoming holidays, team meetings, and important deadlines.</p>
+                <a href="{% url 'calendar_app:month' %}" class="btn btn-outline-primary btn-sm stretched-link">Open Calendar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

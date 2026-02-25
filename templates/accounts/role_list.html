@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block page_title %}Roles{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted m-0">Department roles (can be scoped to a specific department or global).</p>
+  {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+    <a class="btn btn-primary btn-sm" href="{% url 'accounts:role_create' %}">New Role</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Department Scope</th>
+            <th>Authority</th>
+            <th>Limit</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in roles %}
+            <tr>
+              <td>{{ r.code }}</td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.department_scope|default:'All Departments' }}</td>
+              <td>{{ r.approval_authority_level }}</td>
+              <td>{{ r.financial_authorization_limit }}</td>
+              <td>{% if r.is_active %}Yes{% else %}No{% endif %}</td>
+              <td class="text-end">
+                {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:role_edit' r.pk %}">Edit</a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'accounts:role_delete' r.pk %}">Delete</a>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7" class="text-muted">No roles found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

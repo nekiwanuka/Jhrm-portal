@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block page_title %}Access{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <h5 class="mb-2">Enter Access Code</h5>
+        <p class="text-muted small mb-4">This site is restricted to organization viewers.</p>
+
+        <form method="post" class="purpose-form-shell">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next|default:'/' }}">
+
+          <p class="purpose-form-subtitle mb-3">Enter the organization access code to continue to the selected page.</p>
+
+          <div class="mb-3">
+            <label class="form-label">{{ form.code.label }}</label>
+            {{ form.code }}
+            {% if form.code.errors %}
+              <div class="text-danger small mt-1">{{ form.code.errors }}</div>
+            {% endif %}
+          </div>
+
+          <button class="btn btn-primary w-100">
+            <i class="fa-solid fa-key me-1"></i> Continue
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

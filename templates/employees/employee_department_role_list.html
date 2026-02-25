@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block page_title %}Department Assignments{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted m-0">Assign employees to roles in one or more departments.</p>
+  {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+    <a class="btn btn-primary btn-sm" href="{% url 'employees:assignment_create' %}">New Assignment</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Manager</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in assignments %}
+            <tr>
+              <td>{{ a.employee }}</td>
+              <td>{{ a.department }}</td>
+              <td>{{ a.role }}</td>
+              <td>{{ a.reporting_manager|default:'—' }}</td>
+              <td>{% if a.is_active %}Yes{% else %}No{% endif %}</td>
+              <td class="text-end">
+                {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'employees:assignment_edit' a.pk %}">Edit</a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'employees:assignment_delete' a.pk %}">Delete</a>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-muted">No assignments found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

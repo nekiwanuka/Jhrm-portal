@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block page_title %}Employee Allowances & Deductions{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:list' %}">Back to Payroll</a>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:pay_item_types' %}">Pay Item Types</a>
+    <a class="btn btn-primary" href="{% url 'payroll:employee_pay_item_create' %}">Add Item</a>
+  </div>
+</div>
+
+<div class="card"><div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th>Type</th>
+      <th class="text-end">Amount</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Recurring</th>
+      <th>Active</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in items %}
+      <tr>
+        <td>{{ i.employee.get_full_name|default:i.employee.username }}</td>
+        <td>{{ i.item_type.name }} ({{ i.item_type.get_kind_display }})</td>
+        <td class="text-end">{{ i.amount }}</td>
+        <td>{{ i.start_date|default:"—" }}</td>
+        <td>{{ i.end_date|default:"—" }}</td>
+        <td>{% if i.is_recurring %}Yes{% else %}No{% endif %}</td>
+        <td>{% if i.is_active %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'payroll:employee_pay_item_edit' i.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="8">No employee pay items.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div></div>
+{% endblock %}

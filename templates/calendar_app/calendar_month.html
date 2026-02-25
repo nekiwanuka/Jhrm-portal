@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block page_title %}Public Event Calendar{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted m-0">Company events and holidays.</p>
+  {% if can_manage_events %}
+    <a href="{% url 'calendar_app:create' %}" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-plus me-1"></i> Add Event
+    </a>
+  {% endif %}
+</div>
+<div class="card mb-3"><div class="card-body">
+  <h6>Upcoming Events</h6>
+  <ul class="list-unstyled mb-0">
+    {% for e in upcoming_events %}
+      <li class="py-1">{{ e.start_date }} - {{ e.title }} {% if e.is_holiday %}<span class="badge text-bg-warning">Holiday</span>{% endif %}</li>
+    {% empty %}
+      <li class="text-muted">No upcoming events</li>
+    {% endfor %}
+  </ul>
+</div></div>
+<div class="card"><div class="card-body">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Holiday</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+        {% for event in events %}
+          <tr>
+            <td class="fw-semibold">{{ event.title }}</td>
+            <td>{{ event.start_date }}</td>
+            <td>{{ event.end_date }}</td>
+            <td>{{ event.is_holiday|yesno:'Yes,No' }}</td>
+            <td class="text-end">
+              {% if can_manage_events %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'calendar_app:edit' event.pk %}"><i class="fa-regular fa-pen-to-square me-1"></i>Edit</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'calendar_app:delete' event.pk %}"><i class="fa-regular fa-trash-can me-1"></i>Delete</a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-muted">No events.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div>
+{% endblock %}

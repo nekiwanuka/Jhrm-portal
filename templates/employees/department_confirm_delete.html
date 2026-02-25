@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block page_title %}Delete Department{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <p class="mb-3">Delete this department?</p>
+    <form method="post" class="purpose-form-shell">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit">Confirm Delete</button>
+      <a class="btn btn-outline-secondary" href="{% url 'employees:departments' %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

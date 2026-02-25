@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Leave Offer Letter{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<div>
+		<h5 class="mb-0">Leave Offer Letter</h5>
+		<div class="text-muted small">Preview & Print</div>
+	</div>
+	<div class="d-flex gap-2">
+		<a class="btn btn-outline-secondary btn-sm" href="{% url 'leave_mgmt:list' %}">Back</a>
+		<button class="btn btn-primary btn-sm" type="button" onclick="window.print()">
+			<i class="fa-solid fa-print me-1"></i> Print
+		</button>
+	</div>
+</div>
+
+<style>
+.leave-letter-sheet {
+  border: 1px solid #d6deea;
+  border-radius: 14px;
+  overflow: hidden;
+	break-inside: avoid-page;
+	page-break-inside: avoid;
+}
+
+.leave-letter-header {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+.leave-letter-header .meta-label {
+  opacity: 0.9;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.leave-letter-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.leave-letter-section-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.leave-letter-meta {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.4rem 1.5rem;
+	margin-bottom: 1.2rem;
+}
+
+.leave-letter-meta-row {
+	display: flex;
+	gap: 0.5rem;
+	border-bottom: 1px dashed #cfd9e6;
+	padding-bottom: 0.2rem;
+}
+
+.leave-letter-meta-key {
+	min-width: 120px;
+	color: #475569;
+	font-weight: 600;
+}
+
+.leave-letter-body p {
+	margin-bottom: 0.75rem;
+	line-height: 1.65;
+	color: #1f2937;
+}
+
+.leave-letter-footer {
+	margin-top: 2rem;
+	padding-top: 0.9rem;
+	border-top: 1px solid #dbe6f2;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	font-size: 0.8rem;
+	color: #64748b;
+}
+
+@media print {
+	@page {
+		size: A4 portrait;
+		margin: 8mm;
+	}
+
+  nav.sidebar, .page-header, .app-footer-banner, .btn, .alert { display: none !important; }
+	body {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		background: #ffffff !important;
+	}
+	main {
+		margin: 0 !important;
+		padding: 0 !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+  .card { border: none !important; box-shadow: none !important; }
+	.leave-letter-sheet {
+		border: 1px solid #cfd9e6 !important;
+		border-radius: 0 !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+	}
+	.leave-letter-header {
+		padding: 0.8rem 1rem !important;
+		background: #1e40af !important;
+		color: #ffffff !important;
+	}
+	.leave-letter-title { font-size: 1rem !important; }
+	.leave-letter-header .small,
+	.leave-letter-header .meta-label,
+	.leave-letter-header .fw-semibold { font-size: 0.78rem !important; }
+	.leave-letter-section-label { font-size: 0.64rem !important; margin-bottom: 0.12rem !important; }
+	.leave-letter-meta { gap: 0.2rem 1rem !important; margin-bottom: 0.7rem !important; }
+	.leave-letter-meta-row { padding-bottom: 0.1rem !important; }
+	.leave-letter-body p {
+		font-size: 0.86rem !important;
+		line-height: 1.4 !important;
+		margin-bottom: 0.4rem !important;
+	}
+	.card-body.p-4 { padding: 0.9rem !important; }
+	.row.mt-5 { margin-top: 1.2rem !important; }
+	.leave-letter-footer {
+		margin-top: 1rem !important;
+		padding-top: 0.55rem !important;
+		font-size: 0.72rem !important;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.leave-letter-meta {
+		grid-template-columns: 1fr;
+	}
+
+	.leave-letter-footer {
+		flex-direction: column;
+	}
+}
+</style>
+
+<div class="card border-0 shadow-sm leave-letter-sheet">
+	<div class="leave-letter-header d-flex justify-content-between align-items-start gap-3">
+		<div class="d-flex align-items-start gap-3">
+			{% if branding.logo %}
+				<img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" style="width: 56px; height: 56px; object-fit: contain; background: rgba(255,255,255,0.18); border-radius: 8px; padding: 4px;">
+			{% endif %}
+			<div>
+				<div class="leave-letter-title">{{ branding.app_name|default:'Company' }}</div>
+				<div class="small opacity-75">Official Leave Communication</div>
+			</div>
+		</div>
+		<div class="text-end">
+			<div class="meta-label">Reference</div>
+			<div class="fw-semibold">LR-{{ leave.pk }}</div>
+			<div class="meta-label mt-2">Issue Date</div>
+			<div class="fw-semibold">{% now "M d, Y" %}</div>
+		</div>
+	</div>
+
+	<div class="card-body p-4">
+		<div class="mb-4">
+			<div class="leave-letter-section-label">Recipient</div>
+			<div class="fw-semibold">{{ leave.employee.get_full_name|default:leave.employee.username }}</div>
+			<div class="text-muted">Subject: Leave Approval / Decision Notice</div>
+		</div>
+
+		<div class="leave-letter-meta">
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">Leave Type</div>
+				<div class="fw-semibold">{{ leave.leave_type.name }}</div>
+			</div>
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">Status</div>
+				<div class="fw-semibold">{{ leave.get_status_display }}</div>
+			</div>
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">Start Date</div>
+				<div class="fw-semibold">{{ leave.start_date|date:"M d, Y" }}</div>
+			</div>
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">End Date</div>
+				<div class="fw-semibold">{{ leave.end_date|date:"M d, Y" }}</div>
+			</div>
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">Total Days</div>
+				<div class="fw-semibold">{{ leave.total_days }}</div>
+			</div>
+			<div class="leave-letter-meta-row">
+				<div class="leave-letter-meta-key">Reviewed By</div>
+				<div class="fw-semibold">{% if leave.approved_by %}{{ leave.approved_by.get_full_name|default:leave.approved_by.username }}{% else %}—{% endif %}</div>
+			</div>
+		</div>
+
+		<div class="leave-letter-body mb-4">
+			<p>Dear {{ leave.employee.get_full_name|default:leave.employee.username }},</p>
+			<p>This letter serves as formal confirmation of the decision regarding your leave request. Based on the submitted request and internal review, the leave details listed above are approved as recorded.</p>
+			<p>Please ensure a proper handover of any pending responsibilities before the leave start date and coordinate your return with your immediate supervisor.</p>
+		</div>
+
+		{% if leave.reason %}
+			<div class="mb-3">
+				<div class="leave-letter-section-label">Employee Reason</div>
+				<div class="leave-letter-meta-row">
+					<div>{{ leave.reason }}</div>
+				</div>
+			</div>
+		{% endif %}
+
+		{% if leave.decision_notes %}
+			<div class="mb-4">
+				<div class="leave-letter-section-label">HR / Reviewer Notes</div>
+				<div class="leave-letter-meta-row">
+					<div>{{ leave.decision_notes }}</div>
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="row mt-5">
+			<div class="col-md-6">
+				<div class="leave-letter-section-label mb-2">Authorized By</div>
+				{% if branding.hr_signature %}
+					<img src="{{ branding.hr_signature.url }}" alt="Digital signature" style="max-height: 66px; object-fit: contain; display:block;">
+				{% endif %}
+				<div class="fw-semibold">{{ branding.hr_name|default:"" }}</div>
+				<div class="text-muted small">{{ branding.hr_title|default:"Human Resource" }}</div>
+			</div>
+		</div>
+
+		<div class="leave-letter-footer">
+			<div>
+				{% if branding.company_address %}{{ branding.company_address }}{% else %}Official HR Communication{% endif %}
+			</div>
+			<div class="text-md-end">
+				{% if branding.company_phone %}{{ branding.company_phone }}{% endif %}
+				{% if branding.company_phone and branding.company_email %} • {% endif %}
+				{% if branding.company_email %}{{ branding.company_email }}{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% block page_title %}Theme Settings{% endblock %}
+
+{% block content %}
+<div class="row g-3 theme-settings-page">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">Branding & Theme</div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="purpose-form-shell">
+          {% csrf_token %}
+
+          <div class="form-steps" aria-label="Theme settings steps">
+            <div class="form-step is-active">
+              <span class="form-step-index">1</span>
+              <span class="form-step-label">Brand Identity</span>
+            </div>
+            <div class="form-step is-active">
+              <span class="form-step-index">2</span>
+              <span class="form-step-label">Company Details</span>
+            </div>
+            <div class="form-step is-active">
+              <span class="form-step-index">3</span>
+              <span class="form-step-label">Color Palette</span>
+            </div>
+            <div class="form-step is-active">
+              <span class="form-step-index">4</span>
+              <span class="form-step-label">Footer Setup</span>
+            </div>
+          </div>
+
+          <div class="theme-form-section mb-3">
+            <h6 class="theme-form-title">Brand Identity</h6>
+            <p class="theme-form-subtitle">Define your application name, tagline, and logo used across the platform.</p>
+            <div class="form-card-grid">
+              <div>
+                <label class="form-label" for="{{ form.app_name.id_for_label }}">{{ form.app_name.label }}</label>
+                {{ form.app_name }}
+                {% for error in form.app_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.tagline.id_for_label }}">{{ form.tagline.label }}</label>
+                {{ form.tagline }}
+                {% for error in form.tagline.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="theme-field-span-2">
+                <label class="form-label" for="{{ form.logo.id_for_label }}">{{ form.logo.label }}</label>
+                {{ form.logo }}
+                {% for error in form.logo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-form-section mb-3">
+            <h6 class="theme-form-title">Company Details</h6>
+            <p class="theme-form-subtitle">Set official contact details and HR signature information used in letters and reports.</p>
+            <div class="form-card-grid">
+              <div class="theme-field-span-2">
+                <label class="form-label" for="{{ form.company_address.id_for_label }}">{{ form.company_address.label }}</label>
+                {{ form.company_address }}
+                {% for error in form.company_address.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.company_phone.id_for_label }}">{{ form.company_phone.label }}</label>
+                {{ form.company_phone }}
+                {% for error in form.company_phone.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.company_email.id_for_label }}">{{ form.company_email.label }}</label>
+                {{ form.company_email }}
+                {% for error in form.company_email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.hr_name.id_for_label }}">{{ form.hr_name.label }}</label>
+                {{ form.hr_name }}
+                {% for error in form.hr_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.hr_title.id_for_label }}">{{ form.hr_title.label }}</label>
+                {{ form.hr_title }}
+                {% for error in form.hr_title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="theme-field-span-2">
+                <label class="form-label" for="{{ form.hr_signature.id_for_label }}">{{ form.hr_signature.label }}</label>
+                {{ form.hr_signature }}
+                {% for error in form.hr_signature.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-form-section mb-3">
+            <h6 class="theme-form-title">Color Palette</h6>
+            <p class="theme-form-subtitle">Choose interface colors for buttons, accents, sidebar, and page background.</p>
+            <div class="form-card-grid theme-color-grid">
+              <div>
+                <label class="form-label" for="{{ form.primary_color.id_for_label }}">{{ form.primary_color.label }}</label>
+                {{ form.primary_color }}
+                {% for error in form.primary_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.primary_hover_color.id_for_label }}">{{ form.primary_hover_color.label }}</label>
+                {{ form.primary_hover_color }}
+                {% for error in form.primary_hover_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.secondary_color.id_for_label }}">{{ form.secondary_color.label }}</label>
+                {{ form.secondary_color }}
+                {% for error in form.secondary_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.accent_color.id_for_label }}">{{ form.accent_color.label }}</label>
+                {{ form.accent_color }}
+                {% for error in form.accent_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.sidebar_color.id_for_label }}">{{ form.sidebar_color.label }}</label>
+                {{ form.sidebar_color }}
+                {% for error in form.sidebar_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.body_bg_color.id_for_label }}">{{ form.body_bg_color.label }}</label>
+                {{ form.body_bg_color }}
+                {% for error in form.body_bg_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-form-section mb-0">
+            <h6 class="theme-form-title">Footer</h6>
+            <p class="theme-form-subtitle">Control footer visibility, text content, link destination, and footer colors.</p>
+            <div class="form-card-grid">
+              <div class="theme-field-span-2">
+                <div class="form-check form-switch">
+                  {{ form.footer_enabled }}
+                  <label class="form-check-label" for="{{ form.footer_enabled.id_for_label }}">{{ form.footer_enabled.label }}</label>
+                </div>
+                {% for error in form.footer_enabled.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="theme-field-span-2">
+                <label class="form-label" for="{{ form.footer_left_text.id_for_label }}">{{ form.footer_left_text.label }}</label>
+                {{ form.footer_left_text }}
+                {% for error in form.footer_left_text.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.footer_right_text.id_for_label }}">{{ form.footer_right_text.label }}</label>
+                {{ form.footer_right_text }}
+                {% for error in form.footer_right_text.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.footer_link_text.id_for_label }}">{{ form.footer_link_text.label }}</label>
+                {{ form.footer_link_text }}
+                {% for error in form.footer_link_text.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="theme-field-span-2">
+                <label class="form-label" for="{{ form.footer_link_url.id_for_label }}">{{ form.footer_link_url.label }}</label>
+                {{ form.footer_link_url }}
+                {% for error in form.footer_link_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.footer_bg_color.id_for_label }}">{{ form.footer_bg_color.label }}</label>
+                {{ form.footer_bg_color }}
+                {% for error in form.footer_bg_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.footer_text_color.id_for_label }}">{{ form.footer_text_color.label }}</label>
+                {{ form.footer_text_color }}
+                {% for error in form.footer_text_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3 mb-0">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="mt-3 d-flex gap-2 flex-wrap">
+            <button class="btn btn-primary" type="submit">Save Theme</button>
+            <button
+              class="btn btn-outline-danger"
+              type="submit"
+              name="reset_theme"
+              value="1"
+              onclick="return confirm('Reset theme settings to defaults? This will remove your custom logo and colors.')"
+            >
+              Reset to Defaults
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card theme-preview-card">
+      <div class="card-header">Live Preview</div>
+      <div class="card-body">
+        <div id="theme-preview" class="border rounded p-3" style="background: {{ branding.body_bg_color }};">
+          <div id="preview-sidebar" class="rounded p-3 mb-3" style="background: {{ branding.sidebar_color }}; color: #fff;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              {% if branding.logo %}
+                <img id="preview-logo-img" src="{{ branding.logo.url }}" alt="Logo" style="width: 26px; height: 26px; object-fit: contain; border-radius: 0.25rem; background: #fff; padding: 2px;">
+              {% else %}
+                <i id="preview-logo-icon" class="fa-solid fa-layer-group" style="color: {{ branding.primary_color }};"></i>
+                <img id="preview-logo-img" src="" alt="Logo" style="width: 26px; height: 26px; object-fit: contain; border-radius: 0.25rem; background: #fff; padding: 2px; display:none;">
+              {% endif %}
+              <strong id="preview-app-name">{{ branding.app_name }}</strong>
+            </div>
+            <small id="preview-tagline" style="color:#cbd5e1;">{{ branding.tagline }}</small>
+          </div>
+
+          <div class="card mb-0" style="border-color: {{ branding.secondary_color }};">
+            <div class="card-header" style="border-bottom-color: {{ branding.secondary_color }};">
+              Preview Card
+            </div>
+            <div class="card-body">
+              <button id="preview-primary-btn" class="btn btn-sm text-white" style="background: {{ branding.primary_color }}; border-color: {{ branding.primary_color }};">Primary</button>
+              <span class="badge ms-2" id="preview-accent-badge" style="background: {{ branding.accent_color }};">Accent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const appNameInput = document.getElementById('id_app_name');
+  const taglineInput = document.getElementById('id_tagline');
+  const logoInput = document.getElementById('id_logo');
+  const primaryInput = document.getElementById('id_primary_color');
+  const primaryHoverInput = document.getElementById('id_primary_hover_color');
+  const secondaryInput = document.getElementById('id_secondary_color');
+  const accentInput = document.getElementById('id_accent_color');
+  const sidebarInput = document.getElementById('id_sidebar_color');
+  const bodyBgInput = document.getElementById('id_body_bg_color');
+  const footerEnabledInput = document.getElementById('id_footer_enabled');
+  const footerLeftInput = document.getElementById('id_footer_left_text');
+  const footerRightInput = document.getElementById('id_footer_right_text');
+  const footerLinkTextInput = document.getElementById('id_footer_link_text');
+  const footerBgInput = document.getElementById('id_footer_bg_color');
+  const footerTextInput = document.getElementById('id_footer_text_color');
+
+  const previewAppName = document.getElementById('preview-app-name');
+  const previewTagline = document.getElementById('preview-tagline');
+  const previewSidebar = document.getElementById('preview-sidebar');
+  const previewRoot = document.getElementById('theme-preview');
+  const previewPrimaryBtn = document.getElementById('preview-primary-btn');
+  const previewAccentBadge = document.getElementById('preview-accent-badge');
+  const previewCard = previewPrimaryBtn.closest('.card');
+  const previewHeader = previewCard.querySelector('.card-header');
+  const previewLogoImg = document.getElementById('preview-logo-img');
+  const previewLogoIcon = document.getElementById('preview-logo-icon');
+
+  let previewFooter = document.getElementById('preview-footer');
+  if (!previewFooter) {
+    previewFooter = document.createElement('div');
+    previewFooter.id = 'preview-footer';
+    previewFooter.className = 'rounded mt-3 px-3 py-2';
+    previewFooter.style.fontSize = '0.9rem';
+    previewFooter.innerHTML = `
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-1">
+        <small id="preview-footer-left">Footer left</small>
+        <small id="preview-footer-right">
+          <span id="preview-footer-right-prefix">Footer right</span>
+          <a id="preview-footer-link" class="fw-semibold text-decoration-none" href="#" onclick="return false;">Link</a>
+        </small>
+      </div>
+    `;
+    previewRoot.appendChild(previewFooter);
+  }
+
+  const previewFooterLeft = document.getElementById('preview-footer-left');
+  const previewFooterRightPrefix = document.getElementById('preview-footer-right-prefix');
+  const previewFooterLink = document.getElementById('preview-footer-link');
+  const footerLinkUrlInput = document.getElementById('id_footer_link_url');
+  const logoClearInput = document.getElementById('logo-clear_id') || document.getElementById('id_logo-clear_id');
+
+  function applyPreview() {
+    if (appNameInput) previewAppName.textContent = appNameInput.value || 'App Name';
+    if (taglineInput) previewTagline.textContent = taglineInput.value || 'Tagline';
+
+    if (sidebarInput) previewSidebar.style.backgroundColor = sidebarInput.value;
+    if (bodyBgInput) previewRoot.style.backgroundColor = bodyBgInput.value;
+    if (primaryInput) {
+      previewPrimaryBtn.style.backgroundColor = primaryInput.value;
+      previewPrimaryBtn.style.borderColor = primaryInput.value;
+      if (previewLogoIcon) previewLogoIcon.style.color = primaryInput.value;
+    }
+
+    if (primaryHoverInput) {
+      previewPrimaryBtn.onmouseenter = function () {
+        previewPrimaryBtn.style.backgroundColor = primaryHoverInput.value;
+        previewPrimaryBtn.style.borderColor = primaryHoverInput.value;
+      };
+      previewPrimaryBtn.onmouseleave = function () {
+        previewPrimaryBtn.style.backgroundColor = primaryInput ? primaryInput.value : previewPrimaryBtn.style.backgroundColor;
+        previewPrimaryBtn.style.borderColor = primaryInput ? primaryInput.value : previewPrimaryBtn.style.borderColor;
+      };
+    }
+    if (accentInput) previewAccentBadge.style.backgroundColor = accentInput.value;
+    if (secondaryInput) {
+      previewCard.style.borderColor = secondaryInput.value;
+      previewHeader.style.borderBottomColor = secondaryInput.value;
+    }
+
+    if (previewFooter) {
+      const enabled = footerEnabledInput ? footerEnabledInput.checked : true;
+      previewFooter.style.display = enabled ? 'block' : 'none';
+      if (footerBgInput) previewFooter.style.backgroundColor = footerBgInput.value;
+      if (footerTextInput) previewFooter.style.color = footerTextInput.value;
+      if (previewFooterLeft) {
+        const defaultLeft = `© ${new Date().getFullYear()} ${appNameInput ? (appNameInput.value || 'HRMS') : 'HRMS'}. All rights reserved.`;
+        previewFooterLeft.textContent = (footerLeftInput && footerLeftInput.value) ? footerLeftInput.value : defaultLeft;
+      }
+      if (previewFooterRightPrefix) {
+        const rightPrefix = (footerRightInput && footerRightInput.value) ? footerRightInput.value : 'System developed by';
+        previewFooterRightPrefix.textContent = rightPrefix;
+      }
+      if (previewFooterLink) {
+        const linkText = (footerLinkTextInput && footerLinkTextInput.value) ? footerLinkTextInput.value : 'DEVTOWN TECHNOLOGIES';
+        previewFooterLink.textContent = linkText;
+        previewFooterLink.style.color = footerTextInput && footerTextInput.value ? footerTextInput.value : '';
+        if (footerLinkUrlInput && footerLinkUrlInput.value) {
+          previewFooterLink.href = footerLinkUrlInput.value;
+          previewFooterLink.target = '_blank';
+          previewFooterLink.rel = 'noopener noreferrer';
+          previewFooterLink.onclick = null;
+        } else {
+          previewFooterLink.href = '#';
+          previewFooterLink.onclick = function () { return false; };
+          previewFooterLink.removeAttribute('target');
+          previewFooterLink.removeAttribute('rel');
+        }
+      }
+    }
+  }
+
+  if (logoInput) {
+    logoInput.addEventListener('change', function () {
+      const file = this.files && this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewLogoImg.src = e.target.result;
+        previewLogoImg.style.display = 'inline-block';
+        if (previewLogoIcon) previewLogoIcon.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (logoClearInput) {
+    logoClearInput.addEventListener('change', function () {
+      if (this.checked) {
+        previewLogoImg.src = '';
+        previewLogoImg.style.display = 'none';
+        if (previewLogoIcon) previewLogoIcon.style.display = 'inline-block';
+      }
+    });
+  }
+
+  [appNameInput, taglineInput, primaryInput, primaryHoverInput, secondaryInput, accentInput, sidebarInput, bodyBgInput, footerEnabledInput, footerLeftInput, footerRightInput, footerLinkTextInput, footerLinkUrlInput, footerBgInput, footerTextInput].forEach(function (input) {
+    if (input) {
+      input.addEventListener('input', applyPreview);
+      input.addEventListener('change', applyPreview);
+    }
+  });
+
+  applyPreview();
+})();
+</script>
+{% endblock %}

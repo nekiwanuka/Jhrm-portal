@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block page_title %}Penalties (Clearance Required){% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:list' %}">Back to Payroll</a>
+  </div>
+  <div>
+    <a class="btn btn-primary" href="{% url 'payroll:penalty_create' %}">Add Penalty</a>
+  </div>
+</div>
+
+<div class="card"><div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th>Department</th>
+      <th>Applies To</th>
+      <th class="text-end">Amount</th>
+      <th>Status</th>
+      <th>Reason</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in penalties %}
+      <tr>
+        <td>{{ p.employee.get_full_name|default:p.employee.username }}</td>
+        <td>{{ p.department|default:"—" }}</td>
+        <td>{{ p.applies_to_month|date:"Y-m" }}</td>
+        <td class="text-end">{{ p.amount }}</td>
+        <td>
+          <span class="badge
+            {% if p.status == 'CLEARED' %}text-bg-success{% elif p.status == 'WAIVED' %}text-bg-secondary{% else %}text-bg-warning{% endif %}">
+            {{ p.get_status_display }}
+          </span>
+        </td>
+        <td style="max-width: 420px;">{{ p.reason|truncatechars:80 }}</td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'payroll:penalty_edit' p.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">No penalties recorded.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div></div>
+{% endblock %}

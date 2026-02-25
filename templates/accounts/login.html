@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block page_title %}Login{% endblock %}
+{% block content %}
+<section class="auth-page">
+  <div class="row justify-content-center align-items-center py-4 py-md-5">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+      <div class="card auth-card border-0">
+        <div class="card-body p-4 p-md-5">
+        <div class="mb-4">
+          <div class="auth-badge mb-3">
+            <i class="fa-solid fa-user-lock"></i>
+          </div>
+          <h4 class="fw-bold mb-1">Welcome Back</h4>
+          <p class="text-muted mb-0">Sign in to your account</p>
+        </div>
+        
+        <form method="post" class="text-start purpose-form-shell">
+          {% csrf_token %}
+
+          <p class="purpose-form-subtitle mb-3">Enter your account credentials to access the HR management portal.</p>
+          
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger small p-2">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label text-muted small fw-bold text-uppercase">{{ field.label }}</label>
+            {{ field }} 
+            {% if field.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in field.errors %} {{ error }} {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          <div class="d-grid mt-4">
+              <button class="btn btn-primary py-2 fw-bold" type="submit">
+                  Sign In <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+          </div>
+        </form>
+        
+        <div class="mt-4 text-muted small text-center">
+          <p class="mb-0">Protected by Jambas HRMS Security</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}

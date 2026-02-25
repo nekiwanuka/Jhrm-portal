@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block page_title %}Weekly Reports{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h5 class="text-muted mb-0">Team Weekly Updates</h5>
+        <small class="text-muted">Submit your weekly work report. HR can view all reports; supervisors view their department.</small>
+    </div>
+    {% if user.is_authenticated %}
+        <a href="{% url 'reports:weekly_submit' %}" class="btn btn-primary">
+            <i class="fa-solid fa-pen-nib me-1"></i> Submit Report
+        </a>
+    {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+            <i class="fa-solid fa-right-to-bracket me-1"></i> Login to Submit
+        </a>
+    {% endif %}
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h6 class="m-0 fw-bold text-primary">
+            <i class="fa-solid fa-file-contract me-2"></i>Report History
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Week Period</th>
+                        <th>Employee</th>
+                        <th style="width: 20%;">Key Achievements</th>
+                        <th style="width: 20%;">Challenges</th>
+                        <th style="width: 20%;">Next Week Plan</th>
+						<th class="text-end">Submitted</th>
+						<th class="text-end pe-4">Preview</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for r in weekly_reports %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="fw-medium text-dark">{{ r.week_start|date:"M d" }} - {{ r.week_end|date:"M d, Y" }}</div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                <i class="fa-regular fa-user text-secondary"></i>
+                            </div>
+                            <span class="fw-medium">{{ r.employee.get_full_name|default:r.employee.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="d-inline-block text-truncate text-muted" style="max-width: 200px;" title="{{ r.achievements }}">
+                            {{ r.achievements|default:"—" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="d-inline-block text-truncate text-muted" style="max-width: 200px;" title="{{ r.challenges }}">
+                            {{ r.challenges|default:"—" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="d-inline-block text-truncate text-muted" style="max-width: 200px;" title="{{ r.next_week_plan }}">
+                            {{ r.next_week_plan|default:"—" }}
+                        </span>
+                    </td>
+					<td class="text-end text-muted small">
+                        {{ r.submitted_at|date:"M d, H:i" }}
+                    </td>
+					<td class="text-end pe-4">
+						<a class="btn btn-outline-primary btn-sm" href="{% url 'reports:weekly_detail' r.pk %}">
+							Preview
+						</a>
+					</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="fa-regular fa-folder-open fa-3x mb-3 d-block opacity-50"></i>
+                        No weekly reports found.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

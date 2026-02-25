@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block page_title %}Payroll Runs{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<p class="text-muted m-0">Monthly payroll processing and exports.</p>
+	<div class="d-flex gap-2 flex-wrap">
+	  <a href="{% url 'payroll:create' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i>Create Payroll Run</a>
+	  <a href="{% url 'payroll:structures' %}" class="btn btn-outline-secondary btn-sm">Salary Structures</a>
+	  <a href="{% url 'payroll:pay_item_types' %}" class="btn btn-outline-secondary btn-sm">Pay Item Types</a>
+	  <a href="{% url 'payroll:employee_pay_items' %}" class="btn btn-outline-secondary btn-sm">Employee Pay Items</a>
+	  <a href="{% url 'payroll:penalties' %}" class="btn btn-outline-secondary btn-sm">Penalties</a>
+	</div>
+</div>
+
+<div class="card">
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table table-hover align-middle">
+				<thead><tr><th>Month</th><th>Created By</th><th>Created At</th><th class="text-end">Actions</th></tr></thead>
+				<tbody>
+				{% for p in payroll_runs %}
+					<tr>
+						<td class="fw-semibold">{{ p.month|date:"Y-m" }}</td>
+						<td>{{ p.created_by }}</td>
+						<td class="text-muted">{{ p.created_at }}</td>
+						<td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'payroll:detail' p.pk %}"><i class="fa-regular fa-folder-open me-1"></i>Open</a></td>
+					</tr>
+				{% empty %}
+					<tr><td colspan="4" class="text-muted">No payroll runs.</td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

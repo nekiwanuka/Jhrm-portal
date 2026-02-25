@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block page_title %}Public Noticeboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="text-muted mb-0">Company Announcements</h5>
+    {% if user.is_authenticated %}
+        <a href="{% url 'noticeboard:create' %}" class="btn btn-primary">
+            <i class="fa-solid fa-pen-nib me-1"></i> Post Notice
+        </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+{% for notice in notices %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+            <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                         <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                     {% if notice.created_at %}
+                    <small class="text-muted fw-medium">{{ notice.created_at|date:"M d, Y" }}</small>
+                    {% endif %}
+                </div>
+                
+                <h5 class="card-title fw-bold text-dark mb-3">{{ notice.title }}</h5>
+                <div class="text-muted small mb-2">
+                    <span class="me-2"><i class="fa-regular fa-user me-1"></i>{% firstof notice.created_by_name "Unknown" %}</span>
+                    {% if notice.created_by_department or notice.created_by_position %}
+                        <span class="me-2"><i class="fa-regular fa-building me-1"></i>{% firstof notice.created_by_department "" %}{% if notice.created_by_department and notice.created_by_position %} — {% endif %}{% firstof notice.created_by_position "" %}</span>
+                    {% endif %}
+                    {% if notice.created_by_phone %}
+                        <span><i class="fa-solid fa-phone me-1"></i>{{ notice.created_by_phone }}</span>
+                    {% endif %}
+                </div>
+                <p class="card-text text-secondary mb-4 flex-grow-1" style="white-space: pre-wrap;">{{ notice.content|truncatewords:40 }}</p>
+                
+                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                    {% if notice.expiry_date %}
+                        <small class="text-danger fw-medium" title="Expires">
+                            <i class="fa-regular fa-clock me-1"></i> {{ notice.expiry_date|date:"M d" }}
+                        </small>
+                    {% else %}
+                        <span></span>
+                    {% endif %}
+
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'noticeboard:detail' notice.pk %}" class="btn btn-sm btn-outline-primary me-2">View &amp; Comments</a>
+
+                        {% if can_manage_notices %}
+                            <a href="{% url 'noticeboard:edit' notice.pk %}" class="text-muted me-2" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a href="{% url 'noticeboard:delete' notice.pk %}" class="text-danger" title="Delete"><i class="fa-solid fa-trash-can"></i></a>
+                        {% else %}
+                            <span class="badge bg-light text-muted border">Public</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="text-muted opacity-50 mb-3">
+            <i class="fa-regular fa-message fa-4x"></i>
+        </div>
+        <h5>No active notices at the moment.</h5>
+        <p class="text-muted">Check back later for updates.</p>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

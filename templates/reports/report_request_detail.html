@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Report Request Preview{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<div>
+		<h5 class="mb-1">Report Request Preview</h5>
+		<div class="text-muted small">Created {{ report_request.created_at|date:"M d, Y H:i" }}</div>
+	</div>
+	<a class="btn btn-outline-secondary btn-sm" href="{% url 'reports:list' %}">Back</a>
+</div>
+
+<div class="card">
+	<div class="card-body">
+		<div class="row g-3">
+			<div class="col-md-4">
+				<div class="text-muted small">Requested By</div>
+				<div class="fw-semibold">{{ report_request.requested_by.get_full_name|default:report_request.requested_by.username }}</div>
+			</div>
+			<div class="col-md-4">
+				<div class="text-muted small">Report Type</div>
+				<div class="fw-semibold">{{ report_request.get_report_type_display }}</div>
+			</div>
+			<div class="col-md-4">
+				<div class="text-muted small">Date Range</div>
+				<div class="fw-semibold">{{ report_request.start_date }} - {{ report_request.end_date }}</div>
+			</div>
+			<div class="col-md-4">
+				<div class="text-muted small">Department</div>
+				<div class="fw-semibold">{{ report_request.department_name|default:"All" }}</div>
+			</div>
+			<div class="col-md-8">
+				<div class="text-muted small">Targets</div>
+				{% if report_request.request_all_employees %}
+					<div class="fw-semibold">All employees</div>
+				{% else %}
+					{% if report_request.requested_employees.count %}
+						<div class="d-flex flex-wrap gap-2">
+							{% for u in report_request.requested_employees.all %}
+								<span class="badge text-bg-light">{{ u.get_full_name|default:u.username }}</span>
+							{% endfor %}
+						</div>
+					{% else %}
+						<div class="text-muted">No employees selected.</div>
+					{% endif %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

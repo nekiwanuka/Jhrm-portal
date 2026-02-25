@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block page_title %}Pay Item Types{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:list' %}">Back to Payroll</a>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'payroll:employee_pay_items' %}">Employee Pay Items</a>
+    <a class="btn btn-primary" href="{% url 'payroll:pay_item_type_create' %}">Add Type</a>
+  </div>
+</div>
+
+<div class="card"><div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>Kind</th>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Taxable</th>
+      <th>Active</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in types %}
+      <tr>
+        <td>{{ t.get_kind_display }}</td>
+        <td>{{ t.code }}</td>
+        <td>{{ t.name }}</td>
+        <td>{% if t.taxable %}Yes{% else %}No{% endif %}</td>
+        <td>{% if t.is_active %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'payroll:pay_item_type_edit' t.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">No pay item types.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div></div>
+{% endblock %}

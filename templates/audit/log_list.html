@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block page_title %}Audit Logs{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <p class="text-muted mb-3">Notifications center (system activity).</p>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle">
+        <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Method</th><th>Path</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td class="text-muted">{{ log.created_at }}</td>
+              <td class="fw-semibold">{{ log.user|default:'Anonymous' }}</td>
+              <td class="small">{{ log.action }}</td>
+              <td><span class="badge text-bg-light border">{{ log.method }}</span></td>
+              <td><span class="text-muted">{{ log.path }}</span></td>
+              <td>{{ log.status_code }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-muted">No logs yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

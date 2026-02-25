@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="text-muted">Unread: <span class="fw-semibold">{{ unread_count }}</span></div>
+  <form method="post" action="{% url 'audit:notifications_mark_all_read' %}">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary btn-sm" type="submit" {% if unread_count == 0 %}disabled{% endif %}>
+      Mark all as read
+    </button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="list-group">
+      {% for n in notifications %}
+        <div class="list-group-item d-flex justify-content-between align-items-start gap-3 {% if not n.is_read %}bg-light{% endif %}">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2">
+              {% if not n.is_read %}
+                <span class="badge text-bg-primary">NEW</span>
+              {% endif %}
+              <div class="fw-semibold {% if n.is_read %}text-muted{% endif %}">{{ n.message }}</div>
+            </div>
+            <div class="small text-muted mt-1">
+              {{ n.created_at }}
+              {% if n.actor %}• by {{ n.actor.username }}{% endif %}
+              {% if n.path %}• {{ n.path }}{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            {% if n.path %}
+              <a class="btn btn-sm btn-outline-primary" href="{{ n.path }}">Open</a>
+            {% endif %}
+            {% if not n.is_read %}
+              <form method="post" action="{% url 'audit:notifications_mark_read' n.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-secondary" type="submit">Mark read</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="text-muted">No notifications yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block page_title %}Performance Reviews{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<p class="text-muted m-0">Performance evaluation history.</p>
+	<a href="{% url 'performance:create' %}" class="btn btn-primary btn-sm">
+		<i class="fa-solid fa-plus me-1"></i> Add Review
+	</a>
+</div>
+
+<div class="card">
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table table-hover align-middle">
+				<thead><tr><th>Employee</th><th>Reviewer</th><th>Period</th><th>Score</th></tr></thead>
+				<tbody>
+				{% for r in reviews %}
+					<tr>
+						<td class="fw-semibold">{{ r.employee.username }}</td>
+						<td>{{ r.reviewer|default:'-' }}</td>
+						<td>{{ r.period_start }} - {{ r.period_end }}</td>
+						<td class="fw-semibold">{{ r.kpi_score }}</td>
+					</tr>
+				{% empty %}
+					<tr><td colspan="4" class="text-muted">No reviews yet.</td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

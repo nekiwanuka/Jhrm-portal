@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block page_title %}Employees{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<p class="text-muted m-0">Employee directory.</p>
+	{% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+		<a href="{% url 'employees:create' %}" class="btn btn-primary btn-sm">
+			<i class="fa-solid fa-user-plus me-1"></i> Add Employee
+		</a>
+	{% endif %}
+</div>
+
+<div class="card">
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table table-hover align-middle">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Department</th>
+						<th>Position</th>
+						<th>Account</th>
+						<th>Status</th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for e in employees %}
+					<tr>
+						<td class="text-muted">{{ e.employee_id }}</td>
+						<td class="fw-semibold">{{ e.user.get_full_name|default:e.user.username }}</td>
+						<td>{{ e.department|default:'—' }}</td>
+						<td>{{ e.position|default:'—' }}</td>
+						<td>
+							{% if e.user.is_active %}
+								<span class="badge bg-success">Active</span>
+							{% else %}
+								<span class="badge bg-danger">Suspended</span>
+							{% endif %}
+						</td>
+						<td>{{ e.status }}</td>
+						<td class="text-end">
+							<div class="d-inline-flex flex-nowrap gap-1 justify-content-end">
+							<a class="btn btn-sm btn-outline-primary" href="{% url 'employees:preview' e.pk %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Preview employee details">
+								<i class="fa-regular fa-eye me-1"></i> Preview
+							</a>
+							{% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+								<a class="btn btn-sm btn-outline-secondary" href="{% url 'employees:documents' e.pk %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Open employee documents">
+									<i class="fa-regular fa-folder-open me-1"></i> Documents
+								</a>
+								<a class="btn btn-sm btn-outline-secondary" href="{% url 'employees:edit' e.pk %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit employee profile">
+									<i class="fa-regular fa-pen-to-square me-1"></i> Edit
+								</a>
+								{% if not e.user.is_superuser %}
+									{% if user.role != 'HR_MANAGER' or e.user.role != 'SUPER_ADMIN' %}
+										<form method="post" action="{% url 'employees:toggle_access' e.user.pk %}" class="d-inline">
+											{% csrf_token %}
+											{% if e.user.is_active %}
+												<button class="btn btn-sm btn-outline-danger" onclick="return confirm('Suspend this account?')" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend account access">
+													<i class="fa-solid fa-ban me-1"></i> Suspend
+												</button>
+											{% else %}
+												<button class="btn btn-sm btn-outline-success" onclick="return confirm('Restore access to this account?')" data-bs-toggle="tooltip" data-bs-placement="top" title="Restore account access">
+													<i class="fa-solid fa-unlock me-1"></i> Restore
+												</button>
+											{% endif %}
+										</form>
+									{% endif %}
+								{% endif %}
+							{% else %}
+								<span class="text-muted">—</span>
+							{% endif %}
+							</div>
+						</td>
+					</tr>
+					{% empty %}
+					<tr><td colspan="7" class="text-muted">No employee records.</td></tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	(function () {
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		[...tooltipTriggerList].forEach((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+	})();
+</script>
+{% endblock %}

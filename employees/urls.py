@@ -1,0 +1,58 @@
+from django.urls import path
+
+from .views import (
+    DepartmentCreateView,
+    DepartmentDeleteView,
+    DepartmentListView,
+    DepartmentUpdateView,
+    EmployeeCreateView,
+    EmployeeListView,
+    EmployeePreviewView,
+    EmployeeUpdateView,
+    EmployeeDocumentCreateView,
+    EmployeeDocumentDeleteView,
+    EmployeeDocumentListView,
+	MyEmployeeDocumentCreateView,
+    MyEmployeeDocumentDeleteView,
+	MyEmployeeDocumentListView,
+    EmployeeDepartmentRoleCreateView,
+    EmployeeDepartmentRoleDeleteView,
+    EmployeeDepartmentRoleListView,
+    EmployeeDepartmentRoleUpdateView,
+    PositionCreateView,
+    PositionDeleteView,
+    PositionListView,
+    PositionUpdateView,
+    toggle_user_access,
+)
+
+app_name = 'employees'
+
+urlpatterns = [
+    path('', EmployeeListView.as_view(), name='list'),
+    path('user/<int:user_pk>/toggle-access/', toggle_user_access, name='toggle_access'),
+    path('create/', EmployeeCreateView.as_view(), name='create'),
+    path('<int:pk>/edit/', EmployeeUpdateView.as_view(), name='edit'),
+    path('<int:pk>/preview/', EmployeePreviewView.as_view(), name='preview'),
+    path('me/documents/', MyEmployeeDocumentListView.as_view(), name='my_documents'),
+    path('me/documents/upload/', MyEmployeeDocumentCreateView.as_view(), name='my_document_upload'),
+	path('me/documents/<int:pk>/delete/', MyEmployeeDocumentDeleteView.as_view(), name='my_document_delete'),
+	path('<int:employee_pk>/documents/', EmployeeDocumentListView.as_view(), name='documents'),
+	path('<int:employee_pk>/documents/upload/', EmployeeDocumentCreateView.as_view(), name='document_upload'),
+	path('<int:employee_pk>/documents/<int:pk>/delete/', EmployeeDocumentDeleteView.as_view(), name='document_delete'),
+
+    path('departments/', DepartmentListView.as_view(), name='departments'),
+    path('departments/create/', DepartmentCreateView.as_view(), name='department_create'),
+    path('departments/<int:pk>/edit/', DepartmentUpdateView.as_view(), name='department_edit'),
+    path('departments/<int:pk>/delete/', DepartmentDeleteView.as_view(), name='department_delete'),
+
+    path('positions/', PositionListView.as_view(), name='positions'),
+    path('positions/create/', PositionCreateView.as_view(), name='position_create'),
+    path('positions/<int:pk>/edit/', PositionUpdateView.as_view(), name='position_edit'),
+    path('positions/<int:pk>/delete/', PositionDeleteView.as_view(), name='position_delete'),
+
+	path('assignments/', EmployeeDepartmentRoleListView.as_view(), name='assignments'),
+	path('assignments/create/', EmployeeDepartmentRoleCreateView.as_view(), name='assignment_create'),
+	path('assignments/<int:pk>/edit/', EmployeeDepartmentRoleUpdateView.as_view(), name='assignment_edit'),
+	path('assignments/<int:pk>/delete/', EmployeeDepartmentRoleDeleteView.as_view(), name='assignment_delete'),
+]

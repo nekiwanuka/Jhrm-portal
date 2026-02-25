@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block page_title %}Departments{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted m-0">Company departments.</p>
+  {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+    <a class="btn btn-primary btn-sm" href="{% url 'employees:department_create' %}">New Department</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Active</th>
+            <th>Head</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in departments %}
+            <tr>
+              <td>{{ d.name }}</td>
+              <td>{{ d.department_type }}</td>
+              <td>{% if d.is_active %}Yes{% else %}No{% endif %}</td>
+              <td>{{ d.head|default:'—' }}</td>
+              <td class="text-end">
+                {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'employees:department_edit' d.pk %}">Edit</a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'employees:department_delete' d.pk %}">Delete</a>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-muted">No departments found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

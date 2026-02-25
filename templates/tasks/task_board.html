@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% block page_title %}Public Task Board{% endblock %}
+{% block content %}
+<form class="d-none">{% csrf_token %}</form>
+<div class="row g-2 mb-3">
+  <div class="col-md-3"><div class="card"><div class="card-body"><small>Total</small><h5>{{ kpis.total }}</h5></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><small>Done</small><h5>{{ kpis.done }}</h5></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><small>Completion %</small><h5>{{ kpis.completion_rate }}</h5></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><small>Overdue</small><h5>{{ kpis.overdue }}</h5></div></div></div>
+</div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted m-0">Shared task tracking board.</p>
+  {% if can_manage_tasks %}
+    <a href="{% url 'tasks:create' %}" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-plus me-1"></i> Create Task
+    </a>
+  {% endif %}
+</div>
+<div class="row g-3" data-trello-board data-can-manage="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header task-column-header task-column-header--todo">To Do</div>
+      <div class="card-body task-column-body" data-status="TODO">
+        {% for t in todo_tasks %}
+          <div class="task-tile {% if user.is_authenticated %}task-draggable{% endif %}" data-status="{{ t.status }}" data-task-id="{{ t.pk }}" data-move-url="{% url 'tasks:move' t.pk %}" {% if user.is_authenticated %}draggable="true"{% endif %}>
+            <div class="task-labels">
+              {% if t.is_overdue %}
+                <span class="badge text-bg-danger task-label">Overdue</span>
+              {% elif t.is_due_soon %}
+                <span class="badge text-bg-warning task-label">Due soon</span>
+              {% endif %}
+
+              {% if not t.assigned_to %}
+                <span class="badge text-bg-secondary task-label">Unassigned</span>
+              {% endif %}
+
+              {% if t.progress >= 100 %}
+                <span class="badge text-bg-success task-label">{{ t.progress }}%</span>
+              {% elif t.progress >= 50 %}
+                <span class="badge text-bg-primary task-label">{{ t.progress }}%</span>
+              {% else %}
+                <span class="badge text-bg-light task-label">{{ t.progress }}%</span>
+              {% endif %}
+            </div>
+
+            <div class="fw-semibold">{{ t.title }}</div>
+
+            <div class="task-meta">
+              {% if t.deadline %}
+                <span><i class="fa-regular fa-calendar me-1"></i>{{ t.deadline }}</span>
+              {% endif %}
+              {% if t.assigned_to %}
+                <span><i class="fa-regular fa-user me-1"></i>{{ t.assigned_to.username }}</span>
+              {% endif %}
+            </div>
+
+            {% if can_manage_tasks %}
+              <div class="mt-2 d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'tasks:edit' t.pk %}"><i class="fa-regular fa-pen-to-square me-1"></i>Edit</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'tasks:delete' t.pk %}"><i class="fa-regular fa-trash-can me-1"></i>Delete</a>
+              </div>
+            {% endif %}
+          </div>
+        {% empty %}
+          <small class="text-muted task-empty">None</small>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header task-column-header task-column-header--progress">In Progress</div>
+      <div class="card-body task-column-body" data-status="IN_PROGRESS">
+        {% for t in in_progress_tasks %}
+          <div class="task-tile {% if user.is_authenticated %}task-draggable{% endif %}" data-status="{{ t.status }}" data-task-id="{{ t.pk }}" data-move-url="{% url 'tasks:move' t.pk %}" {% if user.is_authenticated %}draggable="true"{% endif %}>
+            <div class="task-labels">
+              {% if t.is_overdue %}
+                <span class="badge text-bg-danger task-label">Overdue</span>
+              {% elif t.is_due_soon %}
+                <span class="badge text-bg-warning task-label">Due soon</span>
+              {% endif %}
+              {% if not t.assigned_to %}
+                <span class="badge text-bg-secondary task-label">Unassigned</span>
+              {% endif %}
+              {% if t.progress >= 100 %}
+                <span class="badge text-bg-success task-label">{{ t.progress }}%</span>
+              {% elif t.progress >= 50 %}
+                <span class="badge text-bg-primary task-label">{{ t.progress }}%</span>
+              {% else %}
+                <span class="badge text-bg-light task-label">{{ t.progress }}%</span>
+              {% endif %}
+            </div>
+
+            <div class="fw-semibold">{{ t.title }}</div>
+            <div class="task-meta">
+              {% if t.deadline %}
+                <span><i class="fa-regular fa-calendar me-1"></i>{{ t.deadline }}</span>
+              {% endif %}
+              {% if t.assigned_to %}
+                <span><i class="fa-regular fa-user me-1"></i>{{ t.assigned_to.username }}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <small class="text-muted task-empty">None</small>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header task-column-header task-column-header--done">Done</div>
+      <div class="card-body task-column-body" data-status="DONE">
+        {% for t in done_tasks %}
+          <div class="task-tile {% if user.is_authenticated %}task-draggable{% endif %}" data-status="{{ t.status }}" data-task-id="{{ t.pk }}" data-move-url="{% url 'tasks:move' t.pk %}" {% if user.is_authenticated %}draggable="true"{% endif %}>
+            <div class="task-labels">
+              <span class="badge text-bg-success task-label">Done</span>
+              {% if t.progress >= 100 %}
+                <span class="badge text-bg-success task-label">{{ t.progress }}%</span>
+              {% else %}
+                <span class="badge text-bg-light task-label">{{ t.progress }}%</span>
+              {% endif %}
+            </div>
+
+            <div class="fw-semibold">{{ t.title }}</div>
+            <div class="task-meta">
+              {% if t.deadline %}
+                <span><i class="fa-regular fa-calendar me-1"></i>{{ t.deadline }}</span>
+              {% endif %}
+              {% if t.assigned_to %}
+                <span><i class="fa-regular fa-user me-1"></i>{{ t.assigned_to.username }}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <small class="text-muted task-empty">None</small>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header task-column-header task-column-header--redo">Re-Do</div>
+      <div class="card-body task-column-body" data-status="REDO">
+        {% for t in redo_tasks %}
+          <div class="task-tile {% if user.is_authenticated %}task-draggable{% endif %}" data-status="{{ t.status }}" data-task-id="{{ t.pk }}" data-move-url="{% url 'tasks:move' t.pk %}" {% if user.is_authenticated %}draggable="true"{% endif %}>
+            <div class="task-labels">
+              <span class="badge text-bg-danger task-label">Re-do</span>
+              {% if t.is_overdue %}
+                <span class="badge text-bg-danger task-label">Overdue</span>
+              {% elif t.is_due_soon %}
+                <span class="badge text-bg-warning task-label">Due soon</span>
+              {% endif %}
+              {% if not t.assigned_to %}
+                <span class="badge text-bg-secondary task-label">Unassigned</span>
+              {% endif %}
+              {% if t.progress >= 100 %}
+                <span class="badge text-bg-success task-label">{{ t.progress }}%</span>
+              {% elif t.progress >= 50 %}
+                <span class="badge text-bg-primary task-label">{{ t.progress }}%</span>
+              {% else %}
+                <span class="badge text-bg-light task-label">{{ t.progress }}%</span>
+              {% endif %}
+            </div>
+
+            <div class="fw-semibold">{{ t.title }}</div>
+            <div class="task-meta">
+              {% if t.deadline %}
+                <span><i class="fa-regular fa-calendar me-1"></i>{{ t.deadline }}</span>
+              {% endif %}
+              {% if t.assigned_to %}
+                <span><i class="fa-regular fa-user me-1"></i>{{ t.assigned_to.username }}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <small class="text-muted task-empty">None</small>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% if can_view_staff_perf %}
+<div class="card mt-3"><div class="card-header">Performance Per Staff</div><div class="card-body">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+      <thead><tr><th>Staff</th><th>Avg Progress</th><th>Tasks</th></tr></thead>
+      <tbody>
+      {% for row in staff_performance %}
+        <tr><td>{{ row.assigned_to__username|default:'Unassigned' }}</td><td>{{ row.avg_progress|floatformat:2 }}</td><td>{{ row.task_count }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const board = document.querySelector('[data-trello-board]');
+    if (!board) return;
+
+    const canManage = board.dataset.canManage === '1';
+    if (!canManage) return;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+    const reorderUrl = "{% url 'tasks:reorder' %}";
+    let dragging = null;
+
+    function updateEmptyState(columnEl) {
+      const tiles = columnEl.querySelectorAll('.task-tile');
+      const emptyEl = columnEl.querySelector('.task-empty');
+      if (tiles.length === 0) {
+        if (!emptyEl) {
+          const small = document.createElement('small');
+          small.className = 'text-muted task-empty';
+          small.textContent = 'None';
+          columnEl.appendChild(small);
+        }
+      } else if (emptyEl) {
+        emptyEl.remove();
+      }
+    }
+
+    function orderedIds(columnEl) {
+      return Array.from(columnEl.querySelectorAll('.task-tile')).map((el) => parseInt(el.dataset.taskId, 10)).filter(Boolean);
+    }
+
+    async function persistOrder(columnEl) {
+      const status = columnEl.dataset.status;
+      const ordered_ids = orderedIds(columnEl);
+      await fetch(reorderUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken || '',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ status, ordered_ids })
+      });
+    }
+
+    function getDragAfterElement(container, y) {
+      const candidates = [...container.querySelectorAll('.task-tile:not(.is-dragging)')];
+      return candidates.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          }
+          return closest;
+        },
+        { offset: Number.NEGATIVE_INFINITY, element: null }
+      ).element;
+    }
+
+    document.querySelectorAll('.task-draggable').forEach((tile) => {
+      tile.addEventListener('dragstart', (e) => {
+        dragging = tile;
+        tile.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', tile.dataset.taskId || '');
+      });
+
+      tile.addEventListener('dragend', () => {
+        tile.classList.remove('is-dragging');
+        dragging = null;
+        document.querySelectorAll('.task-column-body').forEach((c) => c.classList.remove('is-drop-target'));
+      });
+    });
+
+    document.querySelectorAll('.task-column-body').forEach((column) => {
+      column.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        column.classList.add('is-drop-target');
+
+    if (!dragging) return;
+    const afterEl = getDragAfterElement(column, e.clientY);
+    if (afterEl == null) {
+      column.appendChild(dragging);
+    } else {
+      column.insertBefore(dragging, afterEl);
+    }
+      });
+
+      column.addEventListener('dragleave', () => {
+        column.classList.remove('is-drop-target');
+      });
+
+      column.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        column.classList.remove('is-drop-target');
+        if (!dragging) return;
+
+        const fromColumn = dragging.closest('.task-column-body');
+        const newStatus = column.dataset.status;
+        const moveUrl = dragging.dataset.moveUrl;
+        if (!newStatus || !moveUrl) return;
+
+        try {
+          const fromStatus = fromColumn ? fromColumn.dataset.status : null;
+
+          if (fromStatus && fromStatus !== newStatus) {
+            const resp = await fetch(moveUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken || '',
+                'X-Requested-With': 'XMLHttpRequest'
+              },
+              body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!resp.ok) throw new Error('Move failed');
+          }
+
+          // Persist ordering for affected columns
+          if (fromColumn) updateEmptyState(fromColumn);
+          updateEmptyState(column);
+
+          if (fromColumn && fromColumn !== column) {
+            await persistOrder(fromColumn);
+          }
+          await persistOrder(column);
+        } catch (err) {
+          console.error(err);
+          window.location.reload();
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}

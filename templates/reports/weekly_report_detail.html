@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Weekly Report Preview{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<div>
+		<h5 class="mb-1">Weekly Report Preview</h5>
+		<div class="text-muted small">
+			{{ report.week_start|date:"M d, Y" }} - {{ report.week_end|date:"M d, Y" }} • Submission #{{ report.submission_number }}
+		</div>
+	</div>
+	<a class="btn btn-outline-secondary btn-sm" href="{% url 'reports:weekly_list' %}">Back</a>
+</div>
+
+<div class="card mb-3">
+	<div class="card-body">
+		<div class="row g-3">
+			<div class="col-md-6">
+				<div class="text-muted small">Employee</div>
+				<div class="fw-semibold">{{ report.employee.get_full_name|default:report.employee.username }}</div>
+			</div>
+			<div class="col-md-3">
+				<div class="text-muted small">Submitted</div>
+				<div class="fw-semibold">{{ report.submitted_at|date:"M d, Y H:i" }}</div>
+			</div>
+			<div class="col-md-3">
+				<div class="text-muted small">Last Updated</div>
+				<div class="fw-semibold">{{ report.updated_at|date:"M d, Y H:i" }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row g-3">
+	<div class="col-lg-6">
+		<div class="card h-100">
+			<div class="card-header bg-white fw-semibold">Achievements</div>
+			<div class="card-body">
+				{% if report.achievements %}
+					<pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ report.achievements }}</pre>
+				{% else %}
+					<span class="text-muted">—</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<div class="card h-100">
+			<div class="card-header bg-white fw-semibold">Challenges</div>
+			<div class="card-body">
+				{% if report.challenges %}
+					<pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ report.challenges }}</pre>
+				{% else %}
+					<span class="text-muted">—</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<div class="card h-100">
+			<div class="card-header bg-white fw-semibold">Next Week Plan</div>
+			<div class="card-body">
+				{% if report.next_week_plan %}
+					<pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ report.next_week_plan }}</pre>
+				{% else %}
+					<span class="text-muted">—</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<div class="card h-100">
+			<div class="card-header bg-white fw-semibold">General Notes</div>
+			<div class="card-body">
+				{% if report.general_notes %}
+					<pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ report.general_notes }}</pre>
+				{% else %}
+					<span class="text-muted">—</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

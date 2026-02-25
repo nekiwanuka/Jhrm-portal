@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block page_title %}Delete Notice{% endblock %}
+{% block content %}
+<div class="card"><div class="card-body">
+  <p>Delete notice: <strong>{{ object.title }}</strong>?</p>
+  <form method="post" class="purpose-form-shell">{% csrf_token %}<button class="btn btn-danger">Delete</button></form>
+</div></div>
+{% endblock %}
