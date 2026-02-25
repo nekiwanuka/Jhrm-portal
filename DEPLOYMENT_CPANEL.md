@@ -38,7 +38,9 @@ If you deploy with MySQL, install `mysqlclient` only on servers that already hav
 
 ## 4) Configure environment variables
 
-Set environment variables in cPanel Python App configuration (preferred) or in a local `.env` file.
+Set environment variables in cPanel Python App configuration or in a local `.env` file.
+
+This project auto-loads `.env` from the application root using `python-dotenv`, so you can keep production variables in `/home/jambasimaging26/human_resource_portal/.env`.
 
 Minimum required values:
 

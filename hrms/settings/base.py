@@ -1,7 +1,10 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
@@ -92,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Kampala'
+TIME_ZONE = os.getenv('DJANGO_TIME_ZONE', 'Africa/Kampala')
 USE_I18N = True
 USE_TZ = True
 
