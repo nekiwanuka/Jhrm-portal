@@ -2,7 +2,15 @@ from .base import *
 import os
 
 DEBUG = False
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
+
+env_allowed_hosts = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
+if env_allowed_hosts:
+	ALLOWED_HOSTS = env_allowed_hosts
+elif not ALLOWED_HOSTS:
+	ALLOWED_HOSTS = ['jhrmp.jambasimaging.com', 'localhost', '127.0.0.1']
+
+if not CSRF_TRUSTED_ORIGINS:
+	CSRF_TRUSTED_ORIGINS = ['https://jhrmp.jambasimaging.com']
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
