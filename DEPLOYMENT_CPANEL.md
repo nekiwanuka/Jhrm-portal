@@ -47,6 +47,8 @@ DJANGO_SETTINGS_MODULE=hrms.settings.prod
 DJANGO_SECRET_KEY=your-long-random-secret
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=hr.yourdomain.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://hr.yourdomain.com
+DJANGO_SECURE_PROXY_SSL_HEADER=True
 
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=hrms_db
