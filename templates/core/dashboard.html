@@ -162,7 +162,7 @@
   </div>
 </div>
 
-{% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+{% if is_supervisor_plus %}
 <div class="row g-4 mt-1">
     <div class="col-12">
         <div class="card border-0 shadow-sm">

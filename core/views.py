@@ -11,7 +11,7 @@ from django.views.generic import DetailView, ListView
 from .pdf import render_user_manual_pdf
 
 from attendance.models import AttendanceRecord
-from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin
+from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin, user_is_hr_admin, user_is_supervisor_plus
 from employees.models import Department, EmployeeDocument, EmployeeProfile
 from leave_mgmt.models import LeaveRequest
 from noticeboard.models import Notice
@@ -66,17 +66,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 	def dispatch(self, request, *args, **kwargs):
 		if not request.user.is_authenticated:
 			return super().dispatch(request, *args, **kwargs)
-		if request.user.role == 'STAFF':
+		if not user_is_supervisor_plus(request.user):
 			return redirect('core:staff_dashboard')
 		return super().dispatch(request, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		user = self.request.user
+		is_hr_admin = user_is_hr_admin(user)
 
 		employees_qs = EmployeeProfile.objects.select_related('department')
 		departments_qs = Department.objects.filter(is_active=True)
-		if not (user.is_superuser or user.role in {'SUPER_ADMIN', 'HR_MANAGER'}):
+		if not is_hr_admin:
 			try:
 				profile = user.employee_profile
 			except EmployeeProfile.DoesNotExist:
@@ -90,12 +91,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 		context['departments_count'] = departments_qs.count()
 
 		leave_qs = LeaveRequest.objects.all()
-		if not (user.is_superuser or user.role in {'SUPER_ADMIN', 'HR_MANAGER'}):
+		if not is_hr_admin:
 			leave_qs = leave_qs.filter(employee=user)
 		context['pending_leave_count'] = leave_qs.filter(status=LeaveRequest.STATUS_PENDING).count()
 
 		attendance_qs = AttendanceRecord.objects.all()
-		if not (user.is_superuser or user.role in {'SUPER_ADMIN', 'HR_MANAGER'}):
+		if not is_hr_admin:
 			attendance_qs = attendance_qs.filter(employee=user)
 		today = timezone.localdate()
 		context['attendance_today_count'] = attendance_qs.filter(date=today).count()
@@ -112,7 +113,7 @@ class StaffDashboardView(LoginRequiredMixin, TemplateView):
 	def dispatch(self, request, *args, **kwargs):
 		if not request.user.is_authenticated:
 			return super().dispatch(request, *args, **kwargs)
-		if request.user.role != 'STAFF':
+		if user_is_supervisor_plus(request.user):
 			return redirect('core:dashboard')
 		return super().dispatch(request, *args, **kwargs)
 

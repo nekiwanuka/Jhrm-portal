@@ -84,7 +84,7 @@
             <i class="fa-solid fa-file-pdf fa-fw"></i> User Manual (PDF)
           </a>
 
-          {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+          {% if is_supervisor_plus %}
           <a class="nav-link {% if current == 'core:user_manual_staff_pdf' %}active{% endif %}" href="{% url 'core:user_manual_staff_pdf' %}">
             <i class="fa-solid fa-file-pdf fa-fw"></i> Staff Manual (PDF)
           </a>
@@ -102,7 +102,7 @@
                 <i class="fa-solid fa-file-pen fa-fw"></i> Weekly Reports
             </a>
 
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+            {% if is_supervisor_plus %}
             <div class="nav-category">Management</div>
             <a class="nav-link {% if current == 'employees:list' or current == 'employees:create' or current == 'employees:edit' or current == 'employees:documents' or current == 'employees:document_upload' %}active{% endif %}" href="{% url 'employees:list' %}">
                 <i class="fa-solid fa-users fa-fw"></i> Employees
@@ -127,9 +127,9 @@
             </a>
             {% endif %}
 
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+            {% if is_supervisor_plus %}
             <div class="nav-category">Administration</div>
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+            {% if is_hr_admin %}
             <a class="nav-link {% if current == 'audit:notifications' %}active{% endif %}" href="{% url 'audit:notifications' %}">
                 <i class="fa-regular fa-bell fa-fw"></i> Notifications
                 {% if unread_notifications_count and unread_notifications_count > 0 %}
@@ -137,7 +137,7 @@
                 {% endif %}
             </a>
             {% endif %}
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+            {% if is_hr_admin %}
             <a class="nav-link {% if current == 'payroll:list' %}active{% endif %}" href="{% url 'payroll:list' %}">
                 <i class="fa-solid fa-money-bill-wave fa-fw"></i> Payroll
             </a>
@@ -156,7 +156,7 @@
               <i class="fa-solid fa-inbox fa-fw"></i> Read Email
             </a>
 
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+            {% if is_hr_admin %}
             <a class="nav-link {% if current == 'core:theme_settings' %}active{% endif %}" href="{% url 'core:theme_settings' %}">
               <i class="fa-solid fa-palette fa-fw"></i> Theme Settings
             </a>
@@ -165,7 +165,7 @@
             </a>
             {% endif %}
             
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' %}
+            {% if is_super_admin %}
              <a class="nav-link {% if current == 'audit:log_list' %}active{% endif %}" href="{% url 'audit:log_list' %}">
                 <i class="fa-solid fa-shield-halved fa-fw"></i> Audit Logs
             </a>
