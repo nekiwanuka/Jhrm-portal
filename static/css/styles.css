@@ -1111,19 +1111,33 @@ main {
 }
 
 .auth-v2 {
-  background: #ececec;
+  background: #edf2f8;
 }
 
 .auth-card-v2 {
   border-radius: 1rem;
-  background: #f8f8f8;
+  background: #f8fbff;
   box-shadow: 0 10px 24px rgb(15 23 42 / 0.12);
 }
 
+.auth-logo-shell {
+  width: 172px;
+  height: 172px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #4b8dff 0%, #2563eb 60%, #1d4ed8 100%);
+  box-shadow: 0 8px 20px rgb(37 99 235 / 0.35);
+}
+
 .auth-logo-v2 {
-  width: 150px;
-  height: 150px;
+  width: 124px;
+  height: 124px;
   object-fit: contain;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.35rem;
 }
 
 .auth-label-v2 {
@@ -1166,19 +1180,19 @@ main {
   font-weight: 700;
   color: #fff;
   border: 0;
-  background: linear-gradient(180deg, #ba003f 0%, #7f002f 100%);
+  background: linear-gradient(180deg, #3a86ff 0%, #1f6feb 100%);
 }
 
 .auth-btn-v2:hover,
 .auth-btn-v2:focus {
   color: #fff;
-  background: linear-gradient(180deg, #c00244 0%, #8a0033 100%);
+  background: linear-gradient(180deg, #5a9bff 0%, #2976f2 100%);
 }
 
 .auth-forgot-v2 {
-  color: #8b0035;
+  color: #1f6feb;
   text-decoration: none;
-  font-size: 2rem;
+  font-size: 1.2rem;
   line-height: 1.15;
 }
 
@@ -1187,9 +1201,14 @@ main {
 }
 
 @media (max-width: 768px) {
+  .auth-logo-shell {
+    width: 134px;
+    height: 134px;
+  }
+
   .auth-logo-v2 {
-    width: 118px;
-    height: 118px;
+    width: 92px;
+    height: 92px;
   }
 
   .auth-btn-v2 {

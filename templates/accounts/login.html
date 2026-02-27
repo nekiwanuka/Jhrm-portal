@@ -7,13 +7,15 @@
       <div class="card auth-card auth-card-v2 border-0">
         <div class="card-body p-4 p-md-5">
           <div class="text-center mb-4">
-            {% if branding.logo %}
-              <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo-v2 mb-3">
-            {% else %}
-              <div class="auth-badge auth-badge-minimal mb-3 mx-auto">
-                <i class="fa-solid fa-user-lock"></i>
+            <div class="auth-logo-shell mb-3 mx-auto">
+              {% if branding.logo %}
+                <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo-v2">
+              {% else %}
+                <div class="auth-badge auth-badge-minimal mx-auto">
+                  <i class="fa-solid fa-user-lock"></i>
+                </div>
+              {% endif %}
               </div>
-            {% endif %}
           </div>
 
           <form method="post" class="auth-form-v2" novalidate>
