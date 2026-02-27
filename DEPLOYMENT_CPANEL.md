@@ -48,9 +48,12 @@ Minimum required values:
 DJANGO_SETTINGS_MODULE=hrms.settings.prod
 DJANGO_SECRET_KEY=your-long-random-secret
 DJANGO_DEBUG=False
-DJANGO_ALLOWED_HOSTS=hr.yourdomain.com
-DJANGO_CSRF_TRUSTED_ORIGINS=https://hr.yourdomain.com
+DJANGO_ALLOWED_HOSTS=jhrmp.jambasimaging.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://jhrmp.jambasimaging.com
 DJANGO_SECURE_PROXY_SSL_HEADER=True
+DJANGO_TIME_ZONE=Africa/Kampala
+DJANGO_STATIC_ROOT=/home/your_cpanel_user/your_subdomain_docroot/static
+DJANGO_MEDIA_ROOT=/home/your_cpanel_user/your_subdomain_docroot/media
 
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=hrms_db
@@ -85,8 +88,10 @@ python manage.py collectstatic --noinput
 ```
 
 Notes:
-- Static files are collected into `staticfiles/`.
-- User uploads go to `media/`.
+- For this setup, collect static into the same subdomain folder that contains `cgi-bin` (its parent/docroot):
+  - set `DJANGO_STATIC_ROOT=/home/<cpanel_user>/<subdomain_docroot>/static`
+  - set `DJANGO_MEDIA_ROOT=/home/<cpanel_user>/<subdomain_docroot>/media`
+- User uploads go to `DJANGO_MEDIA_ROOT`.
 - Ensure `media/` is writable by the app user.
 
 ## 7) Create admin account

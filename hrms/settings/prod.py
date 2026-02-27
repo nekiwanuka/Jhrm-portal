@@ -3,6 +3,10 @@ import os
 
 DEBUG = False
 
+
+def env_bool(name, default=False):
+	return os.getenv(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
+
 env_allowed_hosts = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
 if env_allowed_hosts:
 	ALLOWED_HOSTS = env_allowed_hosts
@@ -15,8 +19,8 @@ if not CSRF_TRUSTED_ORIGINS:
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True').lower() in ('1', 'true', 'yes', 'on')
-SECURE_HSTS_PRELOAD = os.getenv('DJANGO_SECURE_HSTS_PRELOAD', 'True').lower() in ('1', 'true', 'yes', 'on')
-SECURE_SSL_REDIRECT = os.getenv('DJANGO_SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', True)
+SECURE_HSTS_PRELOAD = env_bool('DJANGO_SECURE_HSTS_PRELOAD', True)
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', True)
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

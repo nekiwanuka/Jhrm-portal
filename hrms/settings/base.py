@@ -6,8 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 load_dotenv(BASE_DIR / '.env')
 
+
+def env_bool(name, default=False):
+    return os.getenv(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
+
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
+DEBUG = env_bool('DJANGO_DEBUG', True)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if host.strip()]
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
 
@@ -34,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,11 +105,22 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = Path(os.getenv('DJANGO_STATIC_ROOT', str(BASE_DIR / 'staticfiles')))
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_STORAGE = os.getenv('DJANGO_STATICFILES_STORAGE', 'whitenoise.storage.CompressedManifestStaticFilesStorage')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.getenv('DJANGO_MEDIA_ROOT', str(BASE_DIR / 'media')))
+
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', os.getenv('MAIL_MAILER', 'django.core.mail.backends.smtp.EmailBackend'))
+EMAIL_HOST = os.getenv('EMAIL_HOST', os.getenv('MAIL_HOST', 'localhost'))
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', os.getenv('MAIL_PORT', '25')))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', os.getenv('MAIL_USERNAME', ''))
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', os.getenv('MAIL_PASSWORD', ''))
+EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', False) or os.getenv('MAIL_ENCRYPTION', '').lower() == 'tls'
+EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False) or os.getenv('MAIL_ENCRYPTION', '').lower() == 'ssl'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
@@ -117,5 +133,5 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
 
-if os.getenv('DJANGO_SECURE_PROXY_SSL_HEADER', 'True').lower() == 'true':
+if env_bool('DJANGO_SECURE_PROXY_SSL_HEADER', True):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
