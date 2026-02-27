@@ -10,8 +10,10 @@ from dotenv import load_dotenv
 def main():
     """Run administrative tasks."""
     base_dir = Path(__file__).resolve().parent
-    load_dotenv(base_dir / '.env')
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.getenv('DJANGO_SETTINGS_MODULE', 'hrms.settings'))
+    # On cPanel/Passenger the hosting environment may inject EMAIL_*/DJANGO_* vars.
+    # We want the app root .env to be the source of truth for deployments.
+    load_dotenv(base_dir / '.env', override=True)
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.getenv('DJANGO_SETTINGS_MODULE', 'hrms.settings.prod'))
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
