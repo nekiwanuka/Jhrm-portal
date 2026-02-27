@@ -13,6 +13,8 @@ class BrandingSettingsForm(forms.ModelForm):
             'app_name',
             'tagline',
             'logo',
+			'login_show_branding',
+			'login_show_logo',
             'company_address',
             'company_phone',
             'company_email',
@@ -35,6 +37,8 @@ class BrandingSettingsForm(forms.ModelForm):
         ]
         widgets = {
             'logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+			'login_show_branding': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+			'login_show_logo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'company_address': forms.TextInput(attrs={'class': 'form-control'}),
             'company_phone': forms.TextInput(attrs={'class': 'form-control'}),
             'company_email': forms.EmailInput(attrs={'class': 'form-control'}),

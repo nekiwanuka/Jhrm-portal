@@ -48,6 +48,21 @@
                 {{ form.logo }}
                 {% for error in form.logo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
               </div>
+
+        <div class="theme-field-span-2">
+        <h6 class="theme-form-title mb-2">Login Page</h6>
+        <div class="form-check form-switch mb-2">
+          {{ form.login_show_branding }}
+          <label class="form-check-label" for="{{ form.login_show_branding.id_for_label }}">Show branding (app name/tagline) on login</label>
+        </div>
+        {% for error in form.login_show_branding.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        <div class="form-check form-switch">
+          {{ form.login_show_logo }}
+          <label class="form-check-label" for="{{ form.login_show_logo.id_for_label }}">Show logo on login</label>
+        </div>
+        {% for error in form.login_show_logo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
             </div>
           </div>
 

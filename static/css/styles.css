@@ -1119,12 +1119,17 @@ main {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   box-shadow: 0 18px 40px rgb(15 23 42 / 0.10), 0 6px 14px rgb(15 23 42 / 0.06);
+  overflow: hidden;
 }
 
 .auth-card-header-v2 {
   background: var(--primary-color);
   color: var(--text-light);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.auth-card-header-compact-v2 {
+  padding: 1.1rem 1.25rem;
 }
 
 .auth-logo-shell {

@@ -40,6 +40,9 @@ class BrandingSettings(models.Model):
 	sidebar_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_COLOR, validators=[hex_color_validator])
 	body_bg_color = models.CharField(max_length=7, default=DEFAULT_BODY_BG_COLOR, validators=[hex_color_validator])
 
+	login_show_branding = models.BooleanField(default=True)
+	login_show_logo = models.BooleanField(default=False)
+
 	footer_enabled = models.BooleanField(default=True)
 	footer_left_text = models.CharField(max_length=220, blank=True)
 	footer_right_text = models.CharField(max_length=220, blank=True, default='System developed by')
@@ -86,6 +89,8 @@ class BrandingSettings(models.Model):
 		self.hr_name = ''
 		self.hr_title = 'Human Resource'
 		self.hr_signature = None
+		self.login_show_branding = True
+		self.login_show_logo = False
 		self.footer_enabled = True
 		self.footer_left_text = ''
 		self.footer_right_text = 'System developed by'
