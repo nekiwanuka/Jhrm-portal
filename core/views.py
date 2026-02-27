@@ -2,12 +2,15 @@ from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMessage
+from django.http import FileResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic import DetailView, ListView
 from django.db.models import Q
+
+import mimetypes
 
 from .pdf import render_user_manual_pdf
 
@@ -22,6 +25,7 @@ from tasks.models import Task
 from .forms import BrandingSettingsForm, ExecutiveEmailForm, PublicAccessCodeForm, PublicAccessCodeSettingsForm
 from .models import BrandingSettings
 from .models import InboundEmail
+from .models import InboundEmailAttachment
 
 import logging
 
@@ -359,3 +363,16 @@ class InboxDetailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, DetailVie
 	template_name = 'core/inbox_detail.html'
 	model = InboundEmail
 	context_object_name = 'email'
+
+
+def inbox_attachment_download(request, pk: int):
+	if not (request.user.is_authenticated and user_is_supervisor_plus(request.user)):
+		raise Http404
+	att = InboundEmailAttachment.objects.select_related('email').filter(pk=pk).first()
+	if not att or not att.file:
+		raise Http404
+	content_type, _ = mimetypes.guess_type(att.file.name)
+	response = FileResponse(att.file.open('rb'), content_type=content_type or 'application/octet-stream')
+	filename = att.filename or att.file.name.split('/')[-1]
+	response['Content-Disposition'] = f'inline; filename="{filename}"'
+	return response

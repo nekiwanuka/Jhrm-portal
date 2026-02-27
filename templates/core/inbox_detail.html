@@ -39,7 +39,7 @@
         <ul class="mb-0">
           {% for a in email.attachments.all %}
             <li>
-              <a href="{{ a.file.url }}" target="_blank" rel="noopener">{{ a.filename|default:"attachment" }}</a>
+              <a href="{% url 'core:inbox_attachment_download' a.pk %}" target="_blank" rel="noopener">{{ a.filename|default:"attachment" }}</a>
               <span class="text-muted small">({{ a.size }} bytes)</span>
             </li>
           {% endfor %}

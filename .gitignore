@@ -13,7 +13,13 @@ env/
 local_settings.py
 db.sqlite3
 *.sqlite3
-media/
+# Media uploads are not tracked, but we do track selected .htaccess files
+media/*
+!media/.htaccess
+!media/employee_documents/
+!media/employee_documents/.htaccess
+!media/inbox_attachments/
+!media/inbox_attachments/.htaccess
 staticfiles/
 
 # Environment files

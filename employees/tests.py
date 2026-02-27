@@ -52,6 +52,11 @@ class EmployeeDocumentOwnershipTests(TestCase):
 			password='Pass12345',
 			role=User.ROLE_STAFF,
 		)
+		self.other = User.objects.create_user(
+			username='staff2',
+			password='Pass12345',
+			role=User.ROLE_STAFF,
+		)
 
 	def test_my_documents_lists_documents_owned_by_logged_user(self):
 		EmployeeDocument.objects.create(
@@ -65,3 +70,17 @@ class EmployeeDocumentOwnershipTests(TestCase):
 		response = self.client.get(reverse('employees:my_documents'))
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, 'My file')
+
+	def test_user_cannot_delete_or_download_someone_elses_document(self):
+		doc = EmployeeDocument.objects.create(
+			user=self.other,
+			document_type=EmployeeDocument.DOC_OTHER,
+			file=SimpleUploadedFile('secret.txt', b'secret'),
+			description='Other file',
+			uploaded_by=self.other,
+		)
+		self.client.force_login(self.user)
+		delete_resp = self.client.get(reverse('employees:my_document_delete', args=[doc.pk]))
+		self.assertEqual(delete_resp.status_code, 404)
+		dl_resp = self.client.get(reverse('employees:document_download', args=[doc.pk]))
+		self.assertEqual(dl_resp.status_code, 404)

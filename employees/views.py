@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
+from django.http import FileResponse, Http404
 from django.db import transaction
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
@@ -9,6 +10,8 @@ from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, FormView
+
+import mimetypes
 
 from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin, user_is_hr_admin, user_is_supervisor_plus, user_is_super_admin
 
@@ -108,6 +111,38 @@ def _can_reset_password(actor: User, target: User) -> bool:
 			return False
 		return actor_profile.department_id and actor_profile.department_id == target_profile.department_id
 	return False
+
+
+def _can_view_document(actor: User, document: EmployeeDocument) -> bool:
+	if not actor.is_authenticated:
+		return False
+	if user_is_hr_admin(actor):
+		return True
+	if document.user_id == actor.id:
+		return True
+	if not user_is_supervisor_plus(actor):
+		return False
+	try:
+		actor_profile = actor.employee_profile
+		doc_owner_profile = document.user.employee_profile
+	except EmployeeProfile.DoesNotExist:
+		return False
+	return bool(actor_profile.department_id and actor_profile.department_id == doc_owner_profile.department_id)
+
+
+@login_required
+def employee_document_download(request, pk: int):
+	doc = get_object_or_404(EmployeeDocument.objects.select_related('user', 'user__employee_profile'), pk=pk)
+	if not _can_view_document(request.user, doc):
+		# Avoid leaking existence.
+		raise Http404
+	if not doc.file:
+		raise Http404
+	content_type, _ = mimetypes.guess_type(doc.file.name)
+	response = FileResponse(doc.file.open('rb'), content_type=content_type or 'application/octet-stream')
+	# Inline by default to support open/print for PDFs.
+	response['Content-Disposition'] = f'inline; filename="{doc.file.name.split("/")[-1]}"'
+	return response
 
 
 class EmployeeListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):

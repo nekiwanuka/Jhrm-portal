@@ -64,7 +64,7 @@
                 {% if d.description %}<div class="small">{{ d.description }}</div>{% endif %}
               </div>
               {% if d.file %}
-                <a class="btn btn-sm btn-outline-primary" href="{{ d.file.url }}" target="_blank" rel="noopener">Open</a>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'employees:document_download' d.pk %}" target="_blank" rel="noopener">Open</a>
               {% else %}
                 <span class="text-muted">—</span>
               {% endif %}

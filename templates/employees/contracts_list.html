@@ -39,7 +39,7 @@
             <td class="text-muted">{{ c.uploaded_at|date:"Y-m-d H:i" }}</td>
             <td class="text-end">
               {% if c.file %}
-                <a class="btn btn-sm btn-outline-primary" href="{{ c.file.url }}" target="_blank" rel="noopener">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'employees:document_download' c.pk %}" target="_blank" rel="noopener">
                   <i class="fa-regular fa-file-lines me-1"></i> Open / Print
                 </a>
               {% else %}
