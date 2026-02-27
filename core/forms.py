@@ -6,6 +6,19 @@ from django.core.exceptions import ValidationError
 from .models import BrandingSettings
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def clean(self, data, initial=None):
+        if not data:
+            return []
+        if isinstance(data, (list, tuple)):
+            return [super().clean(d, initial) for d in data]
+        return [super().clean(data, initial)]
+
+
 class BrandingSettingsForm(forms.ModelForm):
     class Meta:
         model = BrandingSettings
@@ -115,6 +128,13 @@ class ExecutiveEmailForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 8, 'placeholder': 'Write your message...'}),
     )
 
+    attachments = MultipleFileField(
+        label='Attachments',
+        required=False,
+        widget=MultipleFileInput(attrs={'class': 'form-control', 'multiple': True}),
+        help_text='Optional. You can attach images, PDFs, and other documents.',
+    )
+
     def clean_to(self):
         raw = (self.cleaned_data.get('to') or '').replace('\n', ',')
         recipients = [email.strip() for email in raw.split(',') if email.strip()]
@@ -132,3 +152,22 @@ class ExecutiveEmailForm(forms.Form):
             raise forms.ValidationError(f"Invalid email(s): {', '.join(invalid)}")
 
         return recipients
+
+    def clean_attachments(self):
+        files = self.cleaned_data.get('attachments') or []
+        if not files:
+            return []
+
+        max_files = 10
+        max_file_size_bytes = 10 * 1024 * 1024  # 10MB per file
+
+        if len(files) > max_files:
+            raise forms.ValidationError(f'Maximum {max_files} attachments allowed.')
+
+        oversized = [f.name for f in files if getattr(f, 'size', 0) > max_file_size_bytes]
+        if oversized:
+            raise forms.ValidationError(
+                'These files are too large (max 10MB each): ' + ', '.join(oversized)
+            )
+
+        return files

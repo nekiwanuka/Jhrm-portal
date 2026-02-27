@@ -7,7 +7,7 @@
     <div class="card">
       <div class="card-header">Executive Email</div>
       <div class="card-body">
-        <form method="post" class="purpose-form-shell">
+        <form method="post" enctype="multipart/form-data" class="purpose-form-shell">
           {% csrf_token %}
           <p class="purpose-form-subtitle mb-3">Send email using configured SMTP settings from your environment.</p>
 
@@ -34,6 +34,13 @@
             <label class="form-label" for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
             {{ form.message }}
             {% for error in form.message.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.attachments.id_for_label }}">{{ form.attachments.label }}</label>
+            {{ form.attachments }}
+            <div class="form-text">{{ form.attachments.help_text }}</div>
+            {% for error in form.attachments.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
           </div>
 
           <div class="d-flex gap-2">

@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -188,21 +188,31 @@ class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormVi
 		recipients = form.cleaned_data['to']
 		subject = form.cleaned_data['subject']
 		message = form.cleaned_data['message']
+		attachments = form.cleaned_data.get('attachments') or []
 
 		try:
-			send_mail(
+			email = EmailMessage(
 				subject=subject,
-				message=message,
+				body=message,
 				from_email=None,
-				recipient_list=recipients,
-				fail_silently=False,
+				to=recipients,
 			)
+			for f in attachments:
+				content_type = getattr(f, 'content_type', None) or 'application/octet-stream'
+				email.attach(f.name, f.read(), content_type)
+			email.send(fail_silently=False)
 		except Exception:
 			logger.exception('SMTP send failed in ExecutiveEmailView')
 			form.add_error(None, 'Email could not be sent. Please confirm SMTP settings and try again.')
 			return self.form_invalid(form)
 
-		messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
+		if attachments:
+			messages.success(
+				self.request,
+				f'Email sent to {len(recipients)} recipient(s) with {len(attachments)} attachment(s).',
+			)
+		else:
+			messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
 		return super().form_valid(form)
 
 
