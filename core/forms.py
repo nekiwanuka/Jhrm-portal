@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 from .models import BrandingSettings
 
@@ -87,3 +89,36 @@ class PublicAccessCodeSettingsForm(forms.ModelForm):
         if commit:
             obj.save()
         return obj
+
+
+class ExecutiveEmailForm(forms.Form):
+    to = forms.CharField(
+        label='Recipients',
+        help_text='Enter one or more email addresses separated by commas or new lines.',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'name@company.com, another@company.com'}),
+    )
+    subject = forms.CharField(
+        max_length=180,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email subject'}),
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 8, 'placeholder': 'Write your message...'}),
+    )
+
+    def clean_to(self):
+        raw = (self.cleaned_data.get('to') or '').replace('\n', ',')
+        recipients = [email.strip() for email in raw.split(',') if email.strip()]
+        if not recipients:
+            raise forms.ValidationError('Provide at least one recipient email.')
+
+        invalid = []
+        for email in recipients:
+            try:
+                validate_email(email)
+            except ValidationError:
+                invalid.append(email)
+
+        if invalid:
+            raise forms.ValidationError(f"Invalid email(s): {', '.join(invalid)}")
+
+        return recipients

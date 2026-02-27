@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block page_title %}Send Email{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9 col-xl-8">
+    <div class="card">
+      <div class="card-header">Executive Email</div>
+      <div class="card-body">
+        <form method="post" class="purpose-form-shell">
+          {% csrf_token %}
+          <p class="purpose-form-subtitle mb-3">Send email using configured SMTP settings from your environment.</p>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.to.id_for_label }}">{{ form.to.label }}</label>
+            {{ form.to }}
+            <div class="form-text">{{ form.to.help_text }}</div>
+            {% for error in form.to.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
+            {{ form.subject }}
+            {% for error in form.subject.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+            {{ form.message }}
+            {% for error in form.message.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-paper-plane me-1"></i> Send Email
+            </button>
+            <a class="btn btn-outline-secondary" href="{% url 'core:dashboard' %}">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

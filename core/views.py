@@ -1,20 +1,21 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import TemplateView, UpdateView
+from django.views.generic import FormView, TemplateView, UpdateView
 
 from attendance.models import AttendanceRecord
-from core.permissions import HRAdminRequiredMixin
+from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin
 from employees.models import Department, EmployeeDocument, EmployeeProfile
 from leave_mgmt.models import LeaveRequest
 from noticeboard.models import Notice
 from reports.models import WeeklyReport
 from tasks.models import Task
 
-from .forms import BrandingSettingsForm, PublicAccessCodeForm, PublicAccessCodeSettingsForm
+from .forms import BrandingSettingsForm, ExecutiveEmailForm, PublicAccessCodeForm, PublicAccessCodeSettingsForm
 from .models import BrandingSettings
 
 
@@ -168,4 +169,25 @@ class PublicAccessCodeSettingsUpdateView(LoginRequiredMixin, HRAdminRequiredMixi
 
 	def form_valid(self, form):
 		messages.success(self.request, 'Access code settings updated.')
+		return super().form_valid(form)
+
+
+class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormView):
+	template_name = 'core/send_email.html'
+	form_class = ExecutiveEmailForm
+	success_url = reverse_lazy('core:send_email')
+
+	def form_valid(self, form):
+		recipients = form.cleaned_data['to']
+		subject = form.cleaned_data['subject']
+		message = form.cleaned_data['message']
+
+		send_mail(
+			subject=subject,
+			message=message,
+			from_email=None,
+			recipient_list=recipients,
+			fail_silently=False,
+		)
+		messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
 		return super().form_valid(form)
