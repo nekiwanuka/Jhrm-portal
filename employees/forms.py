@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -160,3 +161,22 @@ class EmployeeOnboardingForm(EmployeeProfileForm):
             self.fields['role'].choices = [
                 c for c in self.fields['role'].choices if c[0] != User.ROLE_SUPER_ADMIN
             ]
+
+
+class UserPasswordResetForm(forms.Form):
+    password1 = forms.CharField(widget=forms.PasswordInput, label='New password')
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm new password')
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('password1')
+        p2 = cleaned.get('password2')
+        if p1 and p2 and p1 != p2:
+            self.add_error('password2', 'Passwords do not match.')
+        return cleaned
+
+    def validate_for_user(self, user: User):
+        password = self.cleaned_data.get('password1')
+        if password:
+            password_validation.validate_password(password, user)
+

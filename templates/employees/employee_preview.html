@@ -30,6 +30,11 @@
         <div class="card h-100 mb-0">
           <div class="card-header">Profile</div>
           <div class="card-body">
+            {% if employee.photo %}
+              <div class="mb-3">
+                <img src="{{ employee.photo.url }}" alt="{{ employee.user.get_full_name|default:employee.user.username }}" class="img-thumbnail" style="max-width: 180px;">
+              </div>
+            {% endif %}
             <p><strong>Name:</strong> {{ employee.user.get_full_name|default:employee.user.username }}</p>
             <p><strong>Username:</strong> {{ employee.user.username }}</p>
             <p><strong>Email:</strong> {{ employee.user.email|default:'-' }}</p>
@@ -86,7 +91,12 @@
 </div>
 
 <div class="card mt-3">
-  <div class="card-header">Recent Documents</div>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Recent Documents</span>
+    <a class="btn btn-sm btn-outline-secondary no-print" href="{% url 'employees:documents' employee.pk %}">
+      <i class="fa-regular fa-folder-open me-1"></i> View All ({{ documents_total }})
+    </a>
+  </div>
   <div class="card-body">
     <div class="table-responsive">
       <table class="table table-sm table-hover align-middle mb-0">
@@ -96,6 +106,7 @@
             <th>Description</th>
             <th>Uploaded By</th>
             <th>Uploaded At</th>
+            <th>File</th>
           </tr>
         </thead>
         <tbody>
@@ -105,9 +116,16 @@
               <td>{{ d.description|default:'-' }}</td>
               <td>{{ d.uploaded_by|default:'-' }}</td>
               <td>{{ d.uploaded_at|date:"Y-m-d H:i" }}</td>
+			  <td>
+				{% if d.file %}
+				  <a class="btn btn-sm btn-outline-primary" href="{{ d.file.url }}" target="_blank" rel="noopener">Open</a>
+				{% else %}
+				  —
+				{% endif %}
+			  </td>
             </tr>
           {% empty %}
-            <tr><td colspan="4" class="text-muted">No documents available.</td></tr>
+            <tr><td colspan="5" class="text-muted">No documents available.</td></tr>
           {% endfor %}
         </tbody>
       </table>

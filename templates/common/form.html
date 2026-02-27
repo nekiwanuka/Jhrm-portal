@@ -20,7 +20,11 @@
       {% csrf_token %}
       <p class="purpose-form-subtitle mb-3">
         {% block form_purpose %}
-          Complete the required fields for this form.
+		  {% if form_purpose %}
+			{{ form_purpose }}
+		  {% else %}
+			Complete the required fields for this form.
+		  {% endif %}
         {% endblock %}
       </p>
       <div class="form-card-grid">{{ form.as_p }}</div>

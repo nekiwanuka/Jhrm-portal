@@ -24,14 +24,16 @@
 </div>
 
 <div class="d-flex justify-content-end mb-3">
-  {% if upload_url %}
+  {% if can_manage_docs %}
+    {% if upload_url %}
     <a class="btn btn-primary btn-sm" href="{{ upload_url }}">
       <i class="fa-solid fa-upload me-1"></i> Upload Document
     </a>
-  {% else %}
+    {% else %}
     <a class="btn btn-primary btn-sm" href="{% url 'employees:document_upload' employee_profile.pk %}">
       <i class="fa-solid fa-upload me-1"></i> Upload Document
     </a>
+    {% endif %}
   {% endif %}
 </div>
 

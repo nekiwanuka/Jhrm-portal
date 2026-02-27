@@ -7,6 +7,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from core.permissions import HRAdminRequiredMixin
 
 from .models import BusinessRole
+from .forms import BusinessRoleForm
 
 
 class BusinessRoleListView(LoginRequiredMixin, HRAdminRequiredMixin, ListView):
@@ -21,32 +22,16 @@ class BusinessRoleListView(LoginRequiredMixin, HRAdminRequiredMixin, ListView):
 
 class BusinessRoleCreateView(LoginRequiredMixin, HRAdminRequiredMixin, CreateView):
 	model = BusinessRole
+	form_class = BusinessRoleForm
 	template_name = 'common/form.html'
 	success_url = reverse_lazy('accounts:roles')
-	fields = [
-		'code',
-		'name',
-		'description',
-		'department_scope',
-		'approval_authority_level',
-		'financial_authorization_limit',
-		'is_active',
-	]
 
 
 class BusinessRoleUpdateView(LoginRequiredMixin, HRAdminRequiredMixin, UpdateView):
 	model = BusinessRole
+	form_class = BusinessRoleForm
 	template_name = 'common/form.html'
 	success_url = reverse_lazy('accounts:roles')
-	fields = [
-		'code',
-		'name',
-		'description',
-		'department_scope',
-		'approval_authority_level',
-		'financial_authorization_limit',
-		'is_active',
-	]
 
 
 class BusinessRoleDeleteView(LoginRequiredMixin, HRAdminRequiredMixin, DeleteView):

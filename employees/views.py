@@ -1,16 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, FormView
 
-from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin
+from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin, user_is_hr_admin, user_is_supervisor_plus, user_is_super_admin
 
-from .forms import DepartmentForm, EmployeeDocumentForm, EmployeeOnboardingForm, EmployeeProfileForm, PositionForm
+from .forms import DepartmentForm, EmployeeDocumentForm, EmployeeOnboardingForm, EmployeeProfileForm, PositionForm, UserPasswordResetForm
 from .role_forms import EmployeeDepartmentRoleForm
 from .models import Department, EmployeeDepartmentRole, EmployeeDocument, EmployeeProfile, Position
 from accounts.models import User
@@ -67,6 +69,47 @@ def _can_manage_documents(user):
 	).exists()
 
 
+def _can_view_employee(actor: User, employee_profile: EmployeeProfile) -> bool:
+	if not actor.is_authenticated:
+		return False
+	if user_is_hr_admin(actor):
+		return True
+	# Supervisor+ can view within their department; fallback to self.
+	try:
+		profile = actor.employee_profile
+	except EmployeeProfile.DoesNotExist:
+		profile = None
+	if profile and profile.department_id and employee_profile.department_id:
+		return profile.department_id == employee_profile.department_id
+	return employee_profile.user_id == actor.id
+
+
+def _can_reset_password(actor: User, target: User) -> bool:
+	if not actor.is_authenticated:
+		return False
+	if target.is_superuser:
+		return False
+	if actor.is_superuser:
+		return True
+	if user_is_super_admin(actor):
+		# Super Admin can reset anyone except superuser.
+		return True
+	# HR admin (via HR manager or HR groups/department role) can reset staff/supervisors, but not Super Admin.
+	if user_is_hr_admin(actor):
+		return target.role != User.ROLE_SUPER_ADMIN
+	# Supervisor+ can reset STAFF in their department.
+	if user_is_supervisor_plus(actor):
+		if target.role != User.ROLE_STAFF:
+			return False
+		try:
+			actor_profile = actor.employee_profile
+			target_profile = target.employee_profile
+		except EmployeeProfile.DoesNotExist:
+			return False
+		return actor_profile.department_id and actor_profile.department_id == target_profile.department_id
+	return False
+
+
 class EmployeeListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):
 	model = EmployeeProfile
 	template_name = 'employees/employee_list.html'
@@ -75,15 +118,32 @@ class EmployeeListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView
 	def get_queryset(self):
 		qs = EmployeeProfile.objects.select_related('user', 'department', 'position').order_by('employee_id')
 		user = self.request.user
-		if user.is_superuser or user.role in {'SUPER_ADMIN', 'HR_MANAGER'}:
-			return qs
+		if user_is_hr_admin(user):
+			pass
 		try:
 			profile = user.employee_profile
 		except EmployeeProfile.DoesNotExist:
 			profile = None
-		if profile and profile.department_id:
-			return qs.filter(department_id=profile.department_id)
+		if not user_is_hr_admin(user) and profile and profile.department_id:
+			qs = qs.filter(department_id=profile.department_id)
+
+		q = (self.request.GET.get('q') or '').strip()
+		if q:
+			qs = qs.filter(
+				Q(employee_id__icontains=q)
+				| Q(user__username__icontains=q)
+				| Q(user__first_name__icontains=q)
+				| Q(user__last_name__icontains=q)
+				| Q(user__email__icontains=q)
+				| Q(department__name__icontains=q)
+				| Q(position__title__icontains=q)
+			)
 		return qs
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['q'] = (self.request.GET.get('q') or '').strip()
+		return context
 
 
 class EmployeeCreateView(LoginRequiredMixin, HRAdminRequiredMixin, CreateView):
@@ -145,7 +205,7 @@ class EmployeePreviewView(LoginRequiredMixin, SupervisorPlusRequiredMixin, Detai
 	def get_queryset(self):
 		qs = EmployeeProfile.objects.select_related('user', 'department', 'position').order_by('employee_id')
 		user = self.request.user
-		if user.is_superuser or user.role in {'SUPER_ADMIN', 'HR_MANAGER'}:
+		if user_is_hr_admin(user):
 			return qs
 		try:
 			profile = user.employee_profile
@@ -157,11 +217,12 @@ class EmployeePreviewView(LoginRequiredMixin, SupervisorPlusRequiredMixin, Detai
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['documents'] = EmployeeDocument.objects.filter(user=self.object.user).order_by('-uploaded_at')[:8]
+		context['documents'] = EmployeeDocument.objects.filter(user=self.object.user).order_by('-uploaded_at')[:12]
+		context['documents_total'] = EmployeeDocument.objects.filter(user=self.object.user).count()
 		return context
 
 
-class EmployeeDocumentListView(LoginRequiredMixin, HRAdminRequiredMixin, ListView):
+class EmployeeDocumentListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):
 	model = EmployeeDocument
 	template_name = 'employees/employee_document_list.html'
 	context_object_name = 'documents'
@@ -169,6 +230,9 @@ class EmployeeDocumentListView(LoginRequiredMixin, HRAdminRequiredMixin, ListVie
 	def dispatch(self, request, *args, **kwargs):
 		self.employee_profile = get_object_or_404(EmployeeProfile.objects.select_related('user'), pk=kwargs.get('employee_pk'))
 		self.target_user = self.employee_profile.user
+		if not _can_view_employee(request.user, self.employee_profile):
+			messages.error(request, 'You do not have permission to view these documents.')
+			return redirect('employees:list')
 		return super().dispatch(request, *args, **kwargs)
 
 	def get_queryset(self):
@@ -178,8 +242,39 @@ class EmployeeDocumentListView(LoginRequiredMixin, HRAdminRequiredMixin, ListVie
 		context = super().get_context_data(**kwargs)
 		context['document_owner'] = self.target_user
 		context['employee_profile'] = self.employee_profile
-		context['can_manage_docs'] = _can_manage_documents(self.request.user)
+		context['can_manage_docs'] = user_is_hr_admin(self.request.user)
 		return context
+
+
+class UserPasswordResetView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormView):
+	template_name = 'common/form.html'
+	form_class = UserPasswordResetForm
+
+	def dispatch(self, request, *args, **kwargs):
+		self.target_user = get_object_or_404(User, pk=kwargs.get('user_pk'))
+		if not _can_reset_password(request.user, self.target_user):
+			messages.error(request, 'You do not have permission to reset this password.')
+			return redirect('employees:list')
+		return super().dispatch(request, *args, **kwargs)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['object'] = None
+		context['form_purpose'] = f"Set a new password for {self.target_user.get_full_name() or self.target_user.username}."
+		return context
+
+	def form_valid(self, form):
+		try:
+			form.validate_for_user(self.target_user)
+		except ValidationError as exc:
+			form.add_error('password1', exc)
+			return self.form_invalid(form)
+
+		new_password = form.cleaned_data['password1']
+		self.target_user.set_password(new_password)
+		self.target_user.save(update_fields=['password'])
+		messages.success(self.request, f"Password updated for {self.target_user.get_full_name() or self.target_user.username}.")
+		return redirect('employees:list')
 
 
 class EmployeeDocumentCreateView(LoginRequiredMixin, HRAdminRequiredMixin, CreateView):

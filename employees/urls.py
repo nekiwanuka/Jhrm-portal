@@ -24,6 +24,7 @@ from .views import (
     PositionListView,
     PositionUpdateView,
     toggle_user_access,
+    UserPasswordResetView,
 )
 
 app_name = 'employees'
@@ -31,6 +32,7 @@ app_name = 'employees'
 urlpatterns = [
     path('', EmployeeListView.as_view(), name='list'),
     path('user/<int:user_pk>/toggle-access/', toggle_user_access, name='toggle_access'),
+	path('user/<int:user_pk>/reset-password/', UserPasswordResetView.as_view(), name='reset_password'),
     path('create/', EmployeeCreateView.as_view(), name='create'),
     path('<int:pk>/edit/', EmployeeUpdateView.as_view(), name='edit'),
     path('<int:pk>/preview/', EmployeePreviewView.as_view(), name='preview'),
