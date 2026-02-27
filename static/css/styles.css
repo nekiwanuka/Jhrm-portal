@@ -194,6 +194,11 @@ form textarea:focus {
   display: inline-block;
 }
 
+/* Theme settings: switch knob color (ON state) */
+.theme-settings-page .form-switch .form-check-input:checked {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23dc3545'/%3e%3c/svg%3e");
+}
+
 .theme-settings-page .form-card-grid > div {
   margin: 0;
   background: #dfe5ee;
