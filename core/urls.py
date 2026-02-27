@@ -4,6 +4,7 @@ from .views import (
     DashboardView,
     ExecutiveEmailView,
     UserManualPdfView,
+	UserManualStaffPdfView,
     PublicAccessCodeSettingsUpdateView,
     PublicAccessCodeView,
     PublicHomeView,
@@ -20,6 +21,7 @@ urlpatterns = [
     path('dashboard/staff/', StaffDashboardView.as_view(), name='staff_dashboard'),
     path('tools/send-email/', ExecutiveEmailView.as_view(), name='send_email'),
     path('help/user-manual.pdf', UserManualPdfView.as_view(), name='user_manual_pdf'),
+	path('help/user-manual-staff.pdf', UserManualStaffPdfView.as_view(), name='user_manual_staff_pdf'),
     path('settings/theme/', ThemeSettingsUpdateView.as_view(), name='theme_settings'),
 	path('settings/access-code/', PublicAccessCodeSettingsUpdateView.as_view(), name='access_code_settings'),
 ]

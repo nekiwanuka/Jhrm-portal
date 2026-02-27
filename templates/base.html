@@ -84,6 +84,12 @@
             <i class="fa-solid fa-file-pdf fa-fw"></i> User Manual (PDF)
           </a>
 
+          {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+          <a class="nav-link {% if current == 'core:user_manual_staff_pdf' %}active{% endif %}" href="{% url 'core:user_manual_staff_pdf' %}">
+            <i class="fa-solid fa-file-pdf fa-fw"></i> Staff Manual (PDF)
+          </a>
+          {% endif %}
+
             {% if user.is_authenticated %}
             <div class="nav-category">My Workspace</div>
             <a class="nav-link {% if current == 'employees:my_documents' or current == 'employees:my_document_upload' %}active{% endif %}" href="{% url 'employees:my_documents' %}">

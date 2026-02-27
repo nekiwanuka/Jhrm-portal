@@ -20,6 +20,11 @@ from tasks.models import Task
 from .forms import BrandingSettingsForm, ExecutiveEmailForm, PublicAccessCodeForm, PublicAccessCodeSettingsForm
 from .models import BrandingSettings
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 class PublicHomeView(TemplateView):
 	template_name = 'core/public_home.html'
@@ -184,13 +189,19 @@ class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormVi
 		subject = form.cleaned_data['subject']
 		message = form.cleaned_data['message']
 
-		send_mail(
-			subject=subject,
-			message=message,
-			from_email=None,
-			recipient_list=recipients,
-			fail_silently=False,
-		)
+		try:
+			send_mail(
+				subject=subject,
+				message=message,
+				from_email=None,
+				recipient_list=recipients,
+				fail_silently=False,
+			)
+		except Exception:
+			logger.exception('SMTP send failed in ExecutiveEmailView')
+			form.add_error(None, 'Email could not be sent. Please confirm SMTP settings and try again.')
+			return self.form_invalid(form)
+
 		messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
 		return super().form_valid(form)
 
@@ -206,15 +217,23 @@ class UserManualPdfView(LoginRequiredMixin, TemplateView):
 		is_hr_admin = is_superuser or role in {'SUPER_ADMIN', 'HR_MANAGER'}
 		is_supervisor_plus = is_hr_admin or role in {'SUPERVISOR'}
 
-		role_label = 'Staff'
-		if is_hr_admin:
-			role_label = 'HR Admin'
-		elif is_supervisor_plus:
-			role_label = 'Supervisor'
-
 		return render_user_manual_pdf(
 			user=user,
 			branding=branding,
 			is_hr_admin=is_hr_admin,
 			is_supervisor_plus=is_supervisor_plus,
+		)
+
+
+class UserManualStaffPdfView(LoginRequiredMixin, SupervisorPlusRequiredMixin, TemplateView):
+	"""Download the Staff user manual (for distribution by Supervisor+/HR/Admin)."""
+	def get(self, request, *args, **kwargs):
+		branding = BrandingSettings.get_solo()
+		return render_user_manual_pdf(
+			user=request.user,
+			branding=branding,
+			is_hr_admin=False,
+			is_supervisor_plus=False,
+			manual_role_label='Staff',
+			generated_for_name='All Staff',
 		)

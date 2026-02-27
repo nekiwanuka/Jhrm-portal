@@ -10,6 +10,13 @@ load_dotenv(BASE_DIR / '.env')
 def env_bool(name, default=False):
     return os.getenv(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
 
+
+def env_bool_optional(name: str):
+    """Return True/False if env var is set, else None."""
+    if name not in os.environ:
+        return None
+    return os.getenv(name, '').lower() in ('1', 'true', 'yes', 'on')
+
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
 DEBUG = env_bool('DJANGO_DEBUG', True)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if host.strip()]
@@ -119,8 +126,29 @@ EMAIL_HOST = os.getenv('EMAIL_HOST', os.getenv('MAIL_HOST', 'localhost'))
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', os.getenv('MAIL_PORT', '25')))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', os.getenv('MAIL_USERNAME', ''))
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', os.getenv('MAIL_PASSWORD', ''))
-EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', False) or os.getenv('MAIL_ENCRYPTION', '').lower() == 'tls'
-EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False) or os.getenv('MAIL_ENCRYPTION', '').lower() == 'ssl'
+
+# Encryption selection precedence:
+# 1) explicit EMAIL_USE_TLS / EMAIL_USE_SSL if present
+# 2) MAIL_ENCRYPTION only if explicit flags are not provided
+_tls = env_bool_optional('EMAIL_USE_TLS')
+_ssl = env_bool_optional('EMAIL_USE_SSL')
+if _tls is None and _ssl is None:
+    _mail_encryption = os.getenv('MAIL_ENCRYPTION', '').lower().strip()
+    EMAIL_USE_TLS = _mail_encryption == 'tls'
+    EMAIL_USE_SSL = _mail_encryption == 'ssl'
+else:
+    EMAIL_USE_TLS = bool(_tls)
+    EMAIL_USE_SSL = bool(_ssl)
+
+# Guard against misconfiguration (some environments set both unexpectedly).
+if EMAIL_USE_TLS and EMAIL_USE_SSL:
+    # Prefer SSL on 465, otherwise prefer TLS.
+    if EMAIL_PORT == 465:
+        EMAIL_USE_TLS = False
+    else:
+        EMAIL_USE_SSL = False
+
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '30'))
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
