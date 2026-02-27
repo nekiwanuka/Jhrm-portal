@@ -40,6 +40,7 @@
 <div class="container-fluid app-layout">
   <div class="row app-layout-row">
     <!-- Sidebar -->
+    {% if user.is_authenticated %}
     <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
       <div class="position-sticky pt-0">
         <div class="sidebar-brand px-0 mb-2">
@@ -149,10 +150,11 @@
         </div>
       </div>
     </nav>
+    {% endif %}
 
     <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      {% if request.resolver_match.view_name != 'core:public_home' %}
+    <main class="{% if user.is_authenticated %}col-md-9 ms-sm-auto col-lg-10 px-md-4{% else %}col-12 px-3 px-md-4{% endif %}">
+      {% if request.resolver_match.view_name != 'core:public_home' and user.is_authenticated %}
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom page-header">
         <h1 class="h2 page-title">{% block page_title %}Overview{% endblock %}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
