@@ -15,7 +15,9 @@
                   <i class="fa-solid fa-user-lock"></i>
                 </div>
               {% endif %}
-              </div>
+            </div>
+            <h2 class="auth-title-v2">Sign in</h2>
+            <p class="auth-subtitle-v2">Use your email and password to continue</p>
           </div>
 
           <form method="post" class="auth-form-v2" novalidate>
@@ -29,24 +31,30 @@
 
             <div class="mb-3">
               <label class="form-label auth-label-v2" for="{{ form.username.id_for_label }}">Email<span class="text-danger"> *</span></label>
-              {{ form.username }}
+              <div class="input-group auth-input-group-v2">
+                <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                {{ form.username }}
+              </div>
               {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
             </div>
 
             <div class="mb-3 auth-password-wrap">
               <label class="form-label auth-label-v2" for="{{ form.password.id_for_label }}">Password<span class="text-danger"> *</span></label>
-              {{ form.password }}
+              <div class="input-group auth-input-group-v2">
+                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                {{ form.password }}
+              </div>
               <span class="auth-eye-icon"><i class="fa-regular fa-eye"></i></span>
               {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
             </div>
 
             <div class="d-grid mt-4">
               <button class="btn auth-btn-v2" type="submit">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> LOGIN
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign in
               </button>
             </div>
 
-            <div class="text-end mt-4">
+            <div class="text-end mt-3">
               <a class="auth-forgot-v2" href="mailto:{{ branding.company_email|default:'hr@jambasimaging.com' }}">Forgot your password?</a>
             </div>
           </form>
