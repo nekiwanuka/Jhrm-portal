@@ -34,7 +34,11 @@
                 <div class="fw-semibold">{{ e.user.get_full_name|default:e.user.username }}</div>
                 <div class="text-muted small">{{ e.employee_id }} • {{ e.department|default:'—' }}</div>
               </div>
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'employees:preview' e.pk %}">Preview</a>
+			  {% if is_supervisor_plus %}
+				<a class="btn btn-sm btn-outline-primary" href="{% url 'employees:preview' e.pk %}">Preview</a>
+			  {% else %}
+				<a class="btn btn-sm btn-outline-primary" href="{% url 'employees:my_profile' %}">My Profile</a>
+			  {% endif %}
             </li>
           {% empty %}
             <li class="list-group-item text-muted">No employee matches.</li>
