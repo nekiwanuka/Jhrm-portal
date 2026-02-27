@@ -1,10 +1,12 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMessage
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic import DetailView, ListView
@@ -16,6 +18,7 @@ from .pdf import render_user_manual_pdf
 
 from attendance.models import AttendanceRecord
 from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin, user_is_hr_admin, user_is_supervisor_plus
+from audit.models import Notification
 from employees.models import Department, EmployeeDocument, EmployeeProfile
 from leave_mgmt.models import LeaveRequest
 from noticeboard.models import Notice
@@ -31,6 +34,30 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+def _admin_recipients():
+	User = get_user_model()
+	return list(User.objects.filter(Q(is_superuser=True) | Q(role__in={'SUPER_ADMIN', 'HR_MANAGER'})).only('id'))
+
+
+def _notify_admins(*, actor, message: str, path: str = ''):
+	admins = _admin_recipients()
+	if not admins:
+		return
+	Notification.objects.bulk_create(
+		[
+			Notification(
+				recipient=a,
+				actor=actor,
+				message=(message or '')[:255],
+				path=(path or '')[:255],
+				level=Notification.LEVEL_INFO,
+			)
+			for a in admins
+			if not actor or a.id != actor.id
+		]
+	)
 
 
 class PublicHomeView(TemplateView):
@@ -315,6 +342,20 @@ class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormVi
 			)
 		else:
 			messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
+
+		try:
+			path = reverse('core:send_email')
+		except Exception:
+			path = self.request.path
+		try:
+			subject_short = (subject or '').strip()[:120]
+			_notify_admins(
+				actor=self.request.user,
+				message=f'Email sent: {subject_short} (to {len(recipients)} recipient(s))',
+				path=path,
+			)
+		except Exception:
+			pass
 		return super().form_valid(form)
 
 

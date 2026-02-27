@@ -6,14 +6,23 @@ from email.parser import BytesParser
 from email.utils import getaddresses, parsedate_to_datetime
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.db.models import Q
+from django.urls import reverse
 
+from audit.models import AuditLog, Notification
 from core.models import InboxState, InboundEmail, InboundEmailAttachment
 
 
 _UIDVALIDITY_RE = re.compile(r"UIDVALIDITY\s+(\d+)")
+
+
+def _admin_recipients():
+    User = get_user_model()
+    return list(User.objects.filter(Q(is_superuser=True) | Q(role__in={'SUPER_ADMIN', 'HR_MANAGER'})).only('id'))
 
 
 def _decode_mime_words(value: str) -> str:
@@ -231,6 +240,41 @@ class Command(BaseCommand):
             # Persist progress even if some messages were skipped.
             state.last_uid = max(state.last_uid, max_uid_seen)
             state.save(update_fields=["uidvalidity", "last_uid", "updated_at"])
+
+            if fetched:
+                try:
+                    inbox_path = reverse('core:inbox')
+                except Exception:
+                    inbox_path = '/tools/inbox/'
+
+                try:
+                    AuditLog.objects.create(
+                        user=None,
+                        action=f'EMAIL FETCH: {fetched} ({mailbox})'[:100],
+                        path=inbox_path,
+                        method='IMAP',
+                        status_code=200,
+                    )
+                except Exception:
+                    pass
+
+                try:
+                    admins = _admin_recipients()
+                    if admins:
+                        Notification.objects.bulk_create(
+                            [
+                                Notification(
+                                    recipient=a,
+                                    actor=None,
+                                    message=f'New inbound email(s): {fetched} fetched in {mailbox}'[:255],
+                                    path=inbox_path,
+                                    level=Notification.LEVEL_INFO,
+                                )
+                                for a in admins
+                            ]
+                        )
+                except Exception:
+                    pass
 
             self.stdout.write(self.style.SUCCESS(f"Fetched {fetched} message(s). last_uid={state.last_uid}"))
 

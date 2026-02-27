@@ -529,9 +529,9 @@ def render_user_manual_pdf(
 			h2('16. Audit Logs & Notifications (HR/Admin)')
 			bullet([
 				'Open Audit Logs to review administrative activity.',
-				'Open Notifications to view system/admin notifications and mark them read.',
+				'Open Notifications to view Noticeboard, Tasks, and Email alerts and mark them read.',
 			])
-			example('After task moves or key changes, review notifications and mark all as read.')
+			example('Use Audit Logs for everything else; use Notifications for Noticeboard/Tasks/Emails.')
 
 	# 17. Troubleshooting
 	h2('17. Troubleshooting & FAQ')
