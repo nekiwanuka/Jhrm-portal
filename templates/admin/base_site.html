@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}
+  {% if branding and branding.app_name %}
+    {{ branding.app_name }} | {% trans 'Administration' %}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    :root {
+      --admin-primary: {{ branding.primary_color|default:'#2563eb' }};
+      --admin-primary-hover: {{ branding.primary_hover_color|default:'#1d4ed8' }};
+      --admin-secondary: {{ branding.secondary_color|default:'#64748b' }};
+      --admin-accent: {{ branding.accent_color|default:'#3b82f6' }};
+      --admin-sidebar: {{ branding.sidebar_color|default:'#0f172a' }};
+      --admin-body-bg: {{ branding.body_bg_color|default:'#f1f5f9' }};
+    }
+
+    #header {
+      background: var(--admin-sidebar);
+      color: #fff;
+    }
+
+    #header a:link,
+    #header a:visited,
+    #branding h1,
+    #branding h1 a:link,
+    #branding h1 a:visited {
+      color: #fff;
+    }
+
+    #site-name a:hover,
+    #site-name a:focus {
+      color: var(--admin-accent);
+    }
+
+    body.login {
+      background: var(--admin-body-bg);
+    }
+
+    .module h2,
+    .module caption,
+    .inline-group h2 {
+      background: var(--admin-primary);
+    }
+
+    .button,
+    input[type=submit],
+    input[type=button],
+    .submit-row input,
+    a.button {
+      background: var(--admin-primary);
+    }
+
+    .button:hover,
+    input[type=submit]:hover,
+    input[type=button]:hover,
+    .submit-row input:hover,
+    a.button:hover {
+      background: var(--admin-primary-hover);
+    }
+
+    a:link,
+    a:visited {
+      color: var(--admin-accent);
+    }
+
+    .breadcrumbs {
+      background: var(--admin-secondary);
+    }
+
+    .selector-chosen h2 {
+      background: var(--admin-accent) !important;
+    }
+  </style>
+{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}" style="display:inline-flex;align-items:center;gap:.5rem;">
+      {% if branding and branding.logo %}
+        <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" style="height:24px;width:24px;object-fit:contain;border-radius:4px;background:#fff;padding:2px;" />
+      {% endif %}
+      {{ branding.app_name|default:_('Django administration') }}
+    </a>
+  </h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
