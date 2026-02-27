@@ -137,6 +137,21 @@
                 {{ form.body_bg_color }}
                 {% for error in form.body_bg_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
               </div>
+        <div>
+        <label class="form-label" for="{{ form.text_main_color.id_for_label }}">{{ form.text_main_color.label|default:'Main text color' }}</label>
+        {{ form.text_main_color }}
+        {% for error in form.text_main_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div>
+        <label class="form-label" for="{{ form.text_muted_color.id_for_label }}">{{ form.text_muted_color.label|default:'Muted text color' }}</label>
+        {{ form.text_muted_color }}
+        {% for error in form.text_muted_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div>
+        <label class="form-label" for="{{ form.text_light_color.id_for_label }}">{{ form.text_light_color.label|default:'Light text color' }}</label>
+        {{ form.text_light_color }}
+        {% for error in form.text_light_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
             </div>
           </div>
 

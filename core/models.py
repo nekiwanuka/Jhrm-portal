@@ -17,6 +17,9 @@ class BrandingSettings(models.Model):
 	DEFAULT_ACCENT_COLOR = '#3b82f6'
 	DEFAULT_SIDEBAR_COLOR = '#0f172a'
 	DEFAULT_BODY_BG_COLOR = '#f1f5f9'
+	DEFAULT_TEXT_MAIN_COLOR = '#1e293b'
+	DEFAULT_TEXT_MUTED_COLOR = '#64748b'
+	DEFAULT_TEXT_LIGHT_COLOR = '#f8fafc'
 	DEFAULT_FOOTER_TEXT_COLOR = '#ffffff'
 	DEFAULT_FOOTER_LINK_TEXT = 'DEVTOWN TECHNOLOGIES'
 	DEFAULT_FOOTER_LINK_URL = 'https://www.devtownhosting.com'
@@ -39,6 +42,9 @@ class BrandingSettings(models.Model):
 	accent_color = models.CharField(max_length=7, default=DEFAULT_ACCENT_COLOR, validators=[hex_color_validator])
 	sidebar_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_COLOR, validators=[hex_color_validator])
 	body_bg_color = models.CharField(max_length=7, default=DEFAULT_BODY_BG_COLOR, validators=[hex_color_validator])
+	text_main_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MAIN_COLOR, validators=[hex_color_validator])
+	text_muted_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MUTED_COLOR, validators=[hex_color_validator])
+	text_light_color = models.CharField(max_length=7, default=DEFAULT_TEXT_LIGHT_COLOR, validators=[hex_color_validator])
 
 	login_show_branding = models.BooleanField(default=True)
 	login_show_logo = models.BooleanField(default=False)
@@ -82,6 +88,9 @@ class BrandingSettings(models.Model):
 		self.accent_color = self.DEFAULT_ACCENT_COLOR
 		self.sidebar_color = self.DEFAULT_SIDEBAR_COLOR
 		self.body_bg_color = self.DEFAULT_BODY_BG_COLOR
+		self.text_main_color = self.DEFAULT_TEXT_MAIN_COLOR
+		self.text_muted_color = self.DEFAULT_TEXT_MUTED_COLOR
+		self.text_light_color = self.DEFAULT_TEXT_LIGHT_COLOR
 		self.logo = None
 		self.company_address = ''
 		self.company_phone = ''
