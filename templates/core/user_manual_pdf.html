@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>User Manual</title>
+  <style>
+    @page { size: A4; margin: 1.6cm; }
+
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      color: #111827;
+      line-height: 1.35;
+    }
+
+    h1 { font-size: 18pt; margin: 0 0 6pt; }
+    h2 { font-size: 13.5pt; margin: 14pt 0 6pt; padding-bottom: 2pt; border-bottom: 1px solid #e5e7eb; }
+    h3 { font-size: 12pt; margin: 10pt 0 4pt; }
+
+    .muted { color: #4b5563; }
+    .small { font-size: 9.5pt; }
+
+    .meta {
+      border: 1px solid #e5e7eb;
+      padding: 10pt;
+      background: #f9fafb;
+      margin: 10pt 0 12pt;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2pt 6pt;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      border-radius: 10pt;
+      font-size: 9.5pt;
+    }
+
+    .section {
+      margin: 8pt 0;
+    }
+
+    ul { margin: 4pt 0 8pt 18pt; }
+    li { margin: 2pt 0; }
+
+    .example {
+      border-left: 3px solid #2563eb;
+      padding: 8pt 10pt;
+      background: #f8fbff;
+      margin: 8pt 0;
+    }
+
+    .note {
+      border-left: 3px solid #0f172a;
+      padding: 8pt 10pt;
+      background: #f3f4f6;
+      margin: 8pt 0;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin: 8pt 0; }
+    th, td { border: 1px solid #e5e7eb; padding: 6pt; text-align: left; vertical-align: top; }
+    th { background: #f9fafb; }
+
+    .footer { margin-top: 18pt; font-size: 9pt; color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<h1>{{ branding.app_name|default:"HRMS" }} — User Manual</h1>
+<div class="muted">A practical guide with examples, tailored to your role permissions.</div>
+
+<div class="meta">
+  <div><strong>Role:</strong> <span class="badge">{{ role_label }}</span></div>
+  <div><strong>Generated for:</strong> {{ user.get_full_name|default:user.username }}</div>
+  <div><strong>Date:</strong> {{ generated_at }}</div>
+</div>
+
+<h2>1. Getting Started</h2>
+<div class="section">
+  <h3>1.1 Login</h3>
+  <ul>
+    <li>Open the system URL in your browser.</li>
+    <li>Enter your email address and password.</li>
+    <li>Select <strong>Sign in</strong>.</li>
+  </ul>
+
+  <div class="note small">
+    If you forgot your password, contact your HR Admin or use the password recovery option provided by your organization.
+  </div>
+</div>
+
+<div class="section">
+  <h3>1.2 Navigation</h3>
+  <ul>
+    <li>The <strong>Sidebar</strong> contains the main modules (Dashboard, Noticeboard, Tasks, Calendar, etc.).</li>
+    <li>Some menu items appear only if your role has permission.</li>
+    <li>Your changes may require approval depending on your workflow (e.g., leave requests).</li>
+  </ul>
+</div>
+
+<h2>2. Common Modules (All Users)</h2>
+<div class="section">
+  <h3>2.1 Dashboard</h3>
+  <ul>
+    <li>Shows quick counts and shortcuts for your daily work.</li>
+    <li>Staff may see a staff-specific dashboard.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>2.2 Noticeboard</h3>
+  <ul>
+    <li>View organization announcements.</li>
+    <li>Some notices are public; others may be restricted.</li>
+  </ul>
+  <div class="example">
+    <strong>Example:</strong> A policy update notice appears with a date and details; read and share with your team.
+  </div>
+</div>
+
+<div class="section">
+  <h3>2.3 Tasks</h3>
+  <ul>
+    <li>View tasks assigned to you.</li>
+    <li>Update task status as you progress.</li>
+  </ul>
+  <div class="example">
+    <strong>Example:</strong> A task called “Submit weekly report” moves from <em>To Do</em> → <em>In Progress</em> → <em>Done</em>.
+  </div>
+</div>
+
+<div class="section">
+  <h3>2.4 Calendar</h3>
+  <ul>
+    <li>Review upcoming events and important dates.</li>
+    <li>Use the calendar to plan leave, deadlines, and meetings.</li>
+  </ul>
+</div>
+
+<h2>3. Leave Management</h2>
+<div class="section">
+  <h3>3.1 Request Leave</h3>
+  <ul>
+    <li>Open <strong>Leave</strong> from the sidebar.</li>
+    <li>Select <strong>Create</strong> (or “Request Leave”).</li>
+    <li>Fill in leave type, dates, and a short reason.</li>
+    <li>Submit for approval.</li>
+  </ul>
+  <div class="example">
+    <strong>Example:</strong> Request annual leave for 3 days. The request becomes <em>Pending</em> until approved.
+  </div>
+</div>
+
+{% if is_supervisor_plus %}
+<h2>4. Supervisor Tools</h2>
+<div class="section">
+  <h3>4.1 Approve / Reject Leave</h3>
+  <ul>
+    <li>Open <strong>Leave</strong> and navigate to approvals (if available).</li>
+    <li>Review request details and supporting notes.</li>
+    <li>Approve or reject with a clear comment.</li>
+  </ul>
+  <div class="example">
+    <strong>Example:</strong> Approve leave for a team member and add: “Approved. Ensure handover by Friday.”
+  </div>
+</div>
+
+<div class="section">
+  <h3>4.2 Send Email (Executives/Supervisors+)</h3>
+  <ul>
+    <li>Open <strong>Send Email</strong> from the sidebar.</li>
+    <li>Enter recipients (comma-separated or one per line), subject, and message.</li>
+    <li>Select <strong>Send</strong>.</li>
+  </ul>
+  <div class="note small">
+    Emails are sent using the system SMTP settings configured by your administrator.
+  </div>
+</div>
+{% endif %}
+
+{% if is_hr_admin %}
+<h2>5. HR Admin & System Administration</h2>
+<div class="section">
+  <h3>5.1 Employees</h3>
+  <ul>
+    <li>Create employee profiles and update department assignments.</li>
+    <li>Upload and manage employee documents where permitted.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>5.2 Attendance</h3>
+  <ul>
+    <li>Review attendance records.</li>
+    <li>Correct mistakes based on your organization policy.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>5.3 Reports</h3>
+  <ul>
+    <li>Review and follow up on weekly reports submitted by staff.</li>
+    <li>Export or summarize reports for management meetings.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>5.4 Theme Settings</h3>
+  <ul>
+    <li>Open <strong>Settings → Theme</strong>.</li>
+    <li>Update branding name, tagline, colors, and footer settings.</li>
+    <li>Optionally enable/disable login branding/logo.</li>
+  </ul>
+  <div class="example">
+    <strong>Example:</strong> Change the primary color to match official branding, then save and refresh the site.
+  </div>
+</div>
+
+<div class="section">
+  <h3>5.5 Public Access Code</h3>
+  <ul>
+    <li>Open <strong>Settings → Access Code</strong> (if used by your organization).</li>
+    <li>Enable access-code protection for public pages and set a new code.</li>
+  </ul>
+</div>
+{% endif %}
+
+<h2>6. Roles & Permissions Summary</h2>
+<table>
+  <tr>
+    <th>Role</th>
+    <th>Typical Access</th>
+  </tr>
+  <tr>
+    <td>Staff</td>
+    <td>Personal dashboard, tasks, notices, leave requests, weekly reports (as assigned).</td>
+  </tr>
+  <tr>
+    <td>Supervisor</td>
+    <td>Everything staff can do + approvals and team oversight tools (where enabled).</td>
+  </tr>
+  <tr>
+    <td>HR Manager / Super Admin</td>
+    <td>Full HR administration, employee management, settings, and oversight dashboards.</td>
+  </tr>
+</table>
+
+<div class="footer">
+  Generated by {{ branding.app_name|default:"HRMS" }}.
+</div>
+
+</body>
+</html>

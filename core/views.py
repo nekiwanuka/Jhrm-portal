@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
 
+from .pdf import render_pdf_from_template
+
 from attendance.models import AttendanceRecord
 from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin
 from employees.models import Department, EmployeeDocument, EmployeeProfile
@@ -191,3 +193,35 @@ class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormVi
 		)
 		messages.success(self.request, f'Email sent to {len(recipients)} recipient(s).')
 		return super().form_valid(form)
+
+
+class UserManualPdfView(LoginRequiredMixin, TemplateView):
+	"""Role-aware user manual PDF download."""
+	template_name = 'core/user_manual_pdf.html'
+
+	def get(self, request, *args, **kwargs):
+		branding = BrandingSettings.get_solo()
+		user = request.user
+
+		role = getattr(user, 'role', None) or ('SUPER_ADMIN' if getattr(user, 'is_superuser', False) else 'STAFF')
+		is_superuser = bool(getattr(user, 'is_superuser', False))
+		is_hr_admin = is_superuser or role in {'SUPER_ADMIN', 'HR_MANAGER'}
+		is_supervisor_plus = is_hr_admin or role in {'SUPERVISOR'}
+
+		role_label = 'Staff'
+		if is_hr_admin:
+			role_label = 'HR Admin'
+		elif is_supervisor_plus:
+			role_label = 'Supervisor'
+
+		context = {
+			'branding': branding,
+			'user': user,
+			'generated_at': timezone.localdate().strftime('%Y-%m-%d'),
+			'role_label': role_label,
+			'is_hr_admin': is_hr_admin,
+			'is_supervisor_plus': is_supervisor_plus,
+		}
+
+		filename = f"user-manual-{role_label.lower().replace(' ', '-')}.pdf"
+		return render_pdf_from_template(template_name=self.template_name, context=context, filename=filename)
