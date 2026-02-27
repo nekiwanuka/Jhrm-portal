@@ -23,8 +23,6 @@
 
           <form method="post" class="auth-form-v2" novalidate>
             {% csrf_token %}
-          {# Preserve ?next=... redirect target on login POST #}
-          <input type="hidden" name="{{ redirect_field_name|default:'next' }}" value="{{ redirect_field_value|default:next|default:'' }}">
 
             {% if form.non_field_errors %}
               <div class="alert alert-danger small py-2">
