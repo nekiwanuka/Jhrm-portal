@@ -27,25 +27,7 @@
 
           <p class="purpose-form-subtitle mb-3">Enter your account credentials to access the HR management portal.</p>
 
-          {% if form.non_field_errors %}
-          <div class="alert alert-danger small p-2">
-            {% for error in form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
-          </div>
-          {% endif %}
-
-          {% for field in form %}
-          <div class="mb-3 auth-field-wrap">
-            <label for="{{ field.id_for_label }}" class="form-label text-muted small fw-bold text-uppercase">{{ field.label }}</label>
-            {{ field }} 
-            {% if field.errors %}
-              <div class="text-danger small mt-1">
-                {% for error in field.errors %} {{ error }} {% endfor %}
-              </div>
-            {% endif %}
-          </div>
-          {% endfor %}
+          {% include 'common/_form_fields.html' %}
 
           <div class="d-grid mt-4">
               <button class="btn btn-primary py-2 fw-bold" type="submit">
