@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
 
-from .pdf import render_pdf_from_template
+from .pdf import render_user_manual_pdf
 
 from attendance.models import AttendanceRecord
 from core.permissions import HRAdminRequiredMixin, SupervisorPlusRequiredMixin
@@ -197,8 +197,6 @@ class ExecutiveEmailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, FormVi
 
 class UserManualPdfView(LoginRequiredMixin, TemplateView):
 	"""Role-aware user manual PDF download."""
-	template_name = 'core/user_manual_pdf.html'
-
 	def get(self, request, *args, **kwargs):
 		branding = BrandingSettings.get_solo()
 		user = request.user
@@ -214,14 +212,9 @@ class UserManualPdfView(LoginRequiredMixin, TemplateView):
 		elif is_supervisor_plus:
 			role_label = 'Supervisor'
 
-		context = {
-			'branding': branding,
-			'user': user,
-			'generated_at': timezone.localdate().strftime('%Y-%m-%d'),
-			'role_label': role_label,
-			'is_hr_admin': is_hr_admin,
-			'is_supervisor_plus': is_supervisor_plus,
-		}
-
-		filename = f"user-manual-{role_label.lower().replace(' ', '-')}.pdf"
-		return render_pdf_from_template(template_name=self.template_name, context=context, filename=filename)
+		return render_user_manual_pdf(
+			user=user,
+			branding=branding,
+			is_hr_admin=is_hr_admin,
+			is_supervisor_plus=is_supervisor_plus,
+		)
