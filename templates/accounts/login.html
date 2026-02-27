@@ -3,42 +3,52 @@
 {% block content %}
 <section class="auth-page">
   <div class="row justify-content-center align-items-center py-4 py-md-5 auth-shell">
-    <div class="col-md-8 col-lg-6 col-xl-5">
-      <div class="card auth-card border-0 overflow-hidden">
+    <div class="col-md-9 col-lg-8 col-xl-7">
+      <div class="card auth-card auth-card-minimal border-0 overflow-hidden">
         <div class="card-body p-4 p-md-5">
-        <div class="mb-4 text-center">
+        <div class="mb-4 text-center auth-top-mark">
           {% if branding.logo %}
             <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo mb-3">
           {% else %}
-            <div class="auth-badge mb-3">
+            <div class="auth-badge auth-badge-minimal mb-3">
               <i class="fa-solid fa-user-lock"></i>
             </div>
           {% endif %}
-          <div class="auth-brand mb-2">{{ branding.app_name|default:'Jambas HRMS' }}</div>
-          {% if branding.tagline %}
-          <p class="auth-tagline mb-2">{{ branding.tagline }}</p>
-          {% endif %}
-          <h4 class="fw-bold mb-1">Welcome Back</h4>
-          <p class="text-muted mb-0">Sign in to your account</p>
         </div>
 
-        <form method="post" class="text-start purpose-form-shell auth-form-shell">
+        <form method="post" class="text-start auth-form-shell-minimal">
           {% csrf_token %}
 
-          <p class="purpose-form-subtitle mb-3">Enter your account credentials to access the HR management portal.</p>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger small p-2">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
 
-          {% include 'common/_form_fields.html' %}
+          <div class="mb-4 auth-minimal-field">
+            <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}<span class="text-danger"> *</span></label>
+            {{ form.username }}
+            {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-4 auth-minimal-field">
+            <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}<span class="text-danger"> *</span></label>
+            {{ form.password }}
+            {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          </div>
 
           <div class="d-grid mt-4">
-              <button class="btn btn-primary py-2 fw-bold" type="submit">
-                  Sign In <i class="fa-solid fa-arrow-right ms-2"></i>
+              <button class="btn btn-primary py-2 fw-bold auth-submit-btn" type="submit">
+                  <i class="fa-solid fa-right-to-bracket me-2"></i> LOGIN
               </button>
           </div>
-        </form>
 
-        <div class="mt-4 text-muted small text-center">
-          <p class="mb-0">Protected by Jambas HRMS Security</p>
-        </div>
+          <div class="text-end mt-4">
+            <a class="auth-forgot-link" href="mailto:{{ branding.company_email|default:'hr@jambasimaging.com' }}">Forgot your password?</a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
