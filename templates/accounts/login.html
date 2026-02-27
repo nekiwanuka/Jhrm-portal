@@ -1,57 +1,56 @@
 {% extends 'base.html' %}
 {% block page_title %}Login{% endblock %}
 {% block content %}
-<section class="auth-page">
+<section class="auth-page auth-v2">
   <div class="row justify-content-center align-items-center py-4 py-md-5 auth-shell">
-    <div class="col-md-9 col-lg-8 col-xl-7">
-      <div class="card auth-card auth-card-minimal border-0 overflow-hidden">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+      <div class="card auth-card auth-card-v2 border-0">
         <div class="card-body p-4 p-md-5">
-        <div class="mb-4 text-center auth-top-mark">
-          {% if branding.logo %}
-            <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo mb-3">
-          {% else %}
-            <div class="auth-badge auth-badge-minimal mb-3">
-              <i class="fa-solid fa-user-lock"></i>
-            </div>
-          {% endif %}
-        </div>
-
-        <form method="post" class="text-start auth-form-shell-minimal">
-          {% csrf_token %}
-
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger small p-2">
-              {% for error in form.non_field_errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <div class="mb-4 auth-minimal-field">
-            <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}<span class="text-danger"> *</span></label>
-            {{ form.username }}
-            {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+          <div class="text-center mb-4">
+            {% if branding.logo %}
+              <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo-v2 mb-3">
+            {% else %}
+              <div class="auth-badge auth-badge-minimal mb-3 mx-auto">
+                <i class="fa-solid fa-user-lock"></i>
+              </div>
+            {% endif %}
           </div>
 
-          <div class="mb-4 auth-minimal-field">
-            <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}<span class="text-danger"> *</span></label>
-            {{ form.password }}
-            {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
-          </div>
+          <form method="post" class="auth-form-v2" novalidate>
+            {% csrf_token %}
 
-          <div class="d-grid mt-4">
-              <button class="btn btn-primary py-2 fw-bold auth-submit-btn" type="submit">
-                  <i class="fa-solid fa-right-to-bracket me-2"></i> LOGIN
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger small py-2">
+                {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label class="form-label auth-label-v2" for="{{ form.username.id_for_label }}">Email<span class="text-danger"> *</span></label>
+              {{ form.username }}
+              {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="mb-3 auth-password-wrap">
+              <label class="form-label auth-label-v2" for="{{ form.password.id_for_label }}">Password<span class="text-danger"> *</span></label>
+              {{ form.password }}
+              <span class="auth-eye-icon"><i class="fa-regular fa-eye"></i></span>
+              {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="d-grid mt-4">
+              <button class="btn auth-btn-v2" type="submit">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> LOGIN
               </button>
-          </div>
+            </div>
 
-          <div class="text-end mt-4">
-            <a class="auth-forgot-link" href="mailto:{{ branding.company_email|default:'hr@jambasimaging.com' }}">Forgot your password?</a>
-          </div>
-        </form>
+            <div class="text-end mt-4">
+              <a class="auth-forgot-v2" href="mailto:{{ branding.company_email|default:'hr@jambasimaging.com' }}">Forgot your password?</a>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </section>
 {% endblock %}
