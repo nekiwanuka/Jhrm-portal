@@ -3,22 +3,23 @@
 {% block content %}
 <section class="auth-page auth-v2">
   <div class="row justify-content-center align-items-center py-4 py-md-5 auth-shell">
-    <div class="col-md-8 col-lg-6 col-xl-5">
+    <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
       <div class="card auth-card auth-card-v2 border-0">
-        <div class="card-body p-4 p-md-5">
-          <div class="text-center mb-4">
-            <div class="auth-logo-shell mb-3 mx-auto">
-              {% if branding.logo %}
-                <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo-v2">
-              {% else %}
-                <div class="auth-badge auth-badge-minimal mx-auto">
-                  <i class="fa-solid fa-user-lock"></i>
-                </div>
-              {% endif %}
-            </div>
-            <h2 class="auth-title-v2">Sign in</h2>
-            <p class="auth-subtitle-v2">Use your email and password to continue</p>
+        <div class="auth-card-header-v2 text-center p-4">
+          <div class="auth-logo-shell mb-3 mx-auto">
+            {% if branding.logo %}
+              <img src="{{ branding.logo.url }}" alt="{{ branding.app_name }}" class="auth-logo-v2">
+            {% else %}
+              <i class="fa-solid fa-user-lock auth-logo-fallback"></i>
+            {% endif %}
           </div>
+          <div class="auth-appname">{{ branding.app_name|default:'HRMS' }}</div>
+          <div class="auth-tagline-v2">{{ branding.tagline|default:'Human Resource Portal' }}</div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <h2 class="auth-title-v2">Sign in</h2>
+          <p class="auth-subtitle-v2">Enter your email and password to continue.</p>
 
           <form method="post" class="auth-form-v2" novalidate>
             {% csrf_token %}
@@ -31,30 +32,21 @@
 
             <div class="mb-3">
               <label class="form-label auth-label-v2" for="{{ form.username.id_for_label }}">Email<span class="text-danger"> *</span></label>
-              <div class="input-group auth-input-group-v2">
-                <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                {{ form.username }}
-              </div>
+              {{ form.username }}
               {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
             </div>
 
-            <div class="mb-3 auth-password-wrap">
+            <div class="mb-3">
               <label class="form-label auth-label-v2" for="{{ form.password.id_for_label }}">Password<span class="text-danger"> *</span></label>
-              <div class="input-group auth-input-group-v2">
-                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-                {{ form.password }}
-              </div>
-              <span class="auth-eye-icon"><i class="fa-regular fa-eye"></i></span>
+              {{ form.password }}
               {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
             </div>
 
             <div class="d-grid mt-4">
-              <button class="btn auth-btn-v2" type="submit">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign in
-              </button>
+              <button class="btn auth-btn-v2" type="submit">Sign in</button>
             </div>
 
-            <div class="text-end mt-3">
+            <div class="text-center mt-3">
               <a class="auth-forgot-v2" href="mailto:{{ branding.company_email|default:'hr@jambasimaging.com' }}">Forgot your password?</a>
             </div>
           </form>
