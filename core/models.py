@@ -2,6 +2,10 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 
+def inbox_attachment_upload_to(instance, filename):
+	return f'inbox_attachments/{instance.email_id}/{filename}'
+
+
 hex_color_validator = RegexValidator(
 	regex=r'^#(?:[0-9A-Fa-f]{3}){1,2}$',
 	message='Enter a valid HEX color (e.g. #2563eb).',
@@ -107,3 +111,72 @@ class BrandingSettings(models.Model):
 		self.footer_link_url = self.DEFAULT_FOOTER_LINK_URL
 		self.footer_bg_color = self.DEFAULT_PRIMARY_COLOR
 		self.footer_text_color = self.DEFAULT_FOOTER_TEXT_COLOR
+
+
+class InboxState(models.Model):
+	"""Tracks IMAP sync progress per mailbox."""
+	mailbox = models.CharField(max_length=255, unique=True, default='INBOX')
+	uidvalidity = models.PositiveBigIntegerField(default=0)
+	last_uid = models.PositiveBigIntegerField(default=0)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		verbose_name = 'Inbox State'
+		verbose_name_plural = 'Inbox States'
+
+	def __str__(self):
+		return f'{self.mailbox} (last_uid={self.last_uid})'
+
+
+class InboundEmail(models.Model):
+	mailbox = models.CharField(max_length=255, default='INBOX')
+	uid = models.PositiveBigIntegerField()
+
+	message_id = models.CharField(max_length=255, blank=True, db_index=True)
+	in_reply_to = models.CharField(max_length=255, blank=True)
+	references = models.TextField(blank=True)
+
+	subject = models.CharField(max_length=255, blank=True)
+	from_name = models.CharField(max_length=255, blank=True)
+	from_email = models.CharField(max_length=255, blank=True)
+	to = models.TextField(blank=True)
+	cc = models.TextField(blank=True)
+
+	sent_at = models.DateTimeField(null=True, blank=True)
+	body_text = models.TextField(blank=True)
+
+	fetched_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		verbose_name = 'Inbound Email'
+		verbose_name_plural = 'Inbound Emails'
+		constraints = [
+			models.UniqueConstraint(fields=['mailbox', 'uid'], name='unique_inbound_email_mailbox_uid'),
+		]
+		indexes = [
+			models.Index(fields=['mailbox', '-uid'], name='inbound_mailbox_uid_idx'),
+		]
+
+	def __str__(self):
+		return f'{self.from_email} - {self.subject}'
+
+	@property
+	def snippet(self):
+		text = (self.body_text or '').strip().replace('\r', ' ').replace('\n', ' ')
+		return (text[:120] + '…') if len(text) > 120 else text
+
+
+class InboundEmailAttachment(models.Model):
+	email = models.ForeignKey(InboundEmail, on_delete=models.CASCADE, related_name='attachments')
+	filename = models.CharField(max_length=255, blank=True)
+	content_type = models.CharField(max_length=120, blank=True)
+	size = models.PositiveBigIntegerField(default=0)
+	file = models.FileField(upload_to=inbox_attachment_upload_to)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		verbose_name = 'Inbound Email Attachment'
+		verbose_name_plural = 'Inbound Email Attachments'
+
+	def __str__(self):
+		return self.filename or 'attachment'

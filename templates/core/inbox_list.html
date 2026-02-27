@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block page_title %}Inbox{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-11 col-xl-10">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span>Inbox (latest 50)</span>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'core:send_email' %}">
+          <i class="fa-solid fa-paper-plane me-1"></i> Send Email
+        </a>
+      </div>
+      <div class="card-body">
+        {% if emails %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>Subject</th>
+                  <th>Date</th>
+                  <th class="text-end">Attachments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for m in emails %}
+                <tr>
+                  <td class="text-truncate" style="max-width: 240px;">{{ m.from_email|default:"-" }}</td>
+                  <td class="text-truncate" style="max-width: 520px;">
+                    <a href="{% url 'core:inbox_detail' m.pk %}">
+                      {{ m.subject|default:"(no subject)" }}
+                    </a>
+                    {% if m.snippet %}
+                      <div class="text-muted small text-truncate">{{ m.snippet }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="text-nowrap">{% if m.sent_at %}{{ m.sent_at|date:"Y-m-d H:i" }}{% else %}-{% endif %}</td>
+                  <td class="text-end">{{ m.attachments.count }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info mb-0">
+            No inbound emails have been fetched yet.
+            Run <code>python manage.py imap_fetch</code> on the server to import replies.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

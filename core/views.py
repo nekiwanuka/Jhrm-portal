@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
+from django.views.generic import DetailView, ListView
 
 from .pdf import render_user_manual_pdf
 
@@ -19,6 +20,7 @@ from tasks.models import Task
 
 from .forms import BrandingSettingsForm, ExecutiveEmailForm, PublicAccessCodeForm, PublicAccessCodeSettingsForm
 from .models import BrandingSettings
+from .models import InboundEmail
 
 import logging
 
@@ -247,3 +249,17 @@ class UserManualStaffPdfView(LoginRequiredMixin, SupervisorPlusRequiredMixin, Te
 			manual_role_label='Staff',
 			generated_for_name='All Staff',
 		)
+
+
+class InboxListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):
+	template_name = 'core/inbox_list.html'
+	context_object_name = 'emails'
+
+	def get_queryset(self):
+		return InboundEmail.objects.order_by('-uid')[:50]
+
+
+class InboxDetailView(LoginRequiredMixin, SupervisorPlusRequiredMixin, DetailView):
+	template_name = 'core/inbox_detail.html'
+	model = InboundEmail
+	context_object_name = 'email'

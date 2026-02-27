@@ -150,6 +150,15 @@ if EMAIL_USE_TLS and EMAIL_USE_SSL:
 
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '30'))
 
+# Inbound email (IMAP) settings for portal inbox polling.
+IMAP_HOST = os.getenv('IMAP_HOST', EMAIL_HOST)
+IMAP_PORT = int(os.getenv('IMAP_PORT', '993'))
+IMAP_USER = os.getenv('IMAP_USER', EMAIL_HOST_USER)
+IMAP_PASSWORD = os.getenv('IMAP_PASSWORD', EMAIL_HOST_PASSWORD)
+IMAP_USE_SSL = env_bool('IMAP_USE_SSL', True)
+IMAP_MAILBOX = os.getenv('IMAP_MAILBOX', 'INBOX')
+IMAP_MAX_FETCH = int(os.getenv('IMAP_MAX_FETCH', '50'))
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
