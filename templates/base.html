@@ -127,7 +127,7 @@
             </a>
             {% endif %}
 
-            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
+            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
             <div class="nav-category">Administration</div>
             {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
             <a class="nav-link {% if current == 'audit:notifications' %}active{% endif %}" href="{% url 'audit:notifications' %}">
@@ -137,6 +137,7 @@
                 {% endif %}
             </a>
             {% endif %}
+            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
             <a class="nav-link {% if current == 'payroll:list' %}active{% endif %}" href="{% url 'payroll:list' %}">
                 <i class="fa-solid fa-money-bill-wave fa-fw"></i> Payroll
             </a>
@@ -146,9 +147,16 @@
             <a class="nav-link {% if current == 'leave_mgmt:type_list' or current == 'leave_mgmt:type_create' or current == 'leave_mgmt:type_edit' %}active{% endif %}" href="{% url 'leave_mgmt:type_list' %}">
                 <i class="fa-solid fa-umbrella-beach fa-fw"></i> Leave Types
             </a>
+            {% endif %}
+
             <a class="nav-link {% if current == 'core:send_email' %}active{% endif %}" href="{% url 'core:send_email' %}">
               <i class="fa-solid fa-paper-plane fa-fw"></i> Send Email
             </a>
+            <a class="nav-link {% if current == 'core:inbox' or current == 'core:inbox_detail' %}active{% endif %}" href="{% url 'core:inbox' %}">
+              <i class="fa-solid fa-inbox fa-fw"></i> Read Email
+            </a>
+
+            {% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' %}
             <a class="nav-link {% if current == 'core:theme_settings' %}active{% endif %}" href="{% url 'core:theme_settings' %}">
               <i class="fa-solid fa-palette fa-fw"></i> Theme Settings
             </a>

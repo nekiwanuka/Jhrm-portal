@@ -161,6 +161,26 @@
     </div>
   </div>
 </div>
+
+{% if user.is_superuser or user.role == 'SUPER_ADMIN' or user.role == 'HR_MANAGER' or user.role == 'SUPERVISOR' %}
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                <h6 class="m-0 fw-bold text-primary">Email Tools</h6>
+            </div>
+            <div class="card-body d-flex flex-wrap gap-2">
+                <a href="{% url 'core:send_email' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Send Email
+                </a>
+                <a href="{% url 'core:inbox' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-inbox me-1"></i> Read Email
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
