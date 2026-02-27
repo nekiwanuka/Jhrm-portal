@@ -151,11 +151,43 @@ class EmployeeCreateView(LoginRequiredMixin, HRAdminRequiredMixin, CreateView):
 	form_class = EmployeeOnboardingForm
 	template_name = 'employees/employee_onboard_form.html'
 	success_url = reverse_lazy('employees:list')
+	DRAFT_SESSION_KEY = 'employee_onboarding_draft_v1'
+
+	def get(self, request, *args, **kwargs):
+		if request.GET.get('clear_draft') == '1':
+			request.session.pop(self.DRAFT_SESSION_KEY, None)
+			messages.success(request, 'Employee onboarding draft cleared.')
+			return redirect('employees:create')
+		return super().get(request, *args, **kwargs)
 
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
 		kwargs['request_user'] = self.request.user
 		return kwargs
+
+	def get_initial(self):
+		initial = super().get_initial()
+		draft = self.request.session.get(self.DRAFT_SESSION_KEY) or {}
+		if isinstance(draft, dict):
+			initial.update(draft)
+		return initial
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['has_onboarding_draft'] = bool(self.request.session.get(self.DRAFT_SESSION_KEY))
+		return context
+
+	def post(self, request, *args, **kwargs):
+		if request.POST.get('save_draft') == '1':
+			allowed_keys = set(self.form_class.base_fields.keys())
+			draft = {}
+			for key in allowed_keys:
+				if key in request.POST:
+					draft[key] = request.POST.get(key)
+			request.session[self.DRAFT_SESSION_KEY] = draft
+			messages.success(request, 'Draft saved. You can come back later to finish onboarding.')
+			return redirect('employees:list')
+		return super().post(request, *args, **kwargs)
 
 	@transaction.atomic
 	def form_valid(self, form):
@@ -353,6 +385,47 @@ class MyEmployeeDocumentCreateView(LoginRequiredMixin, CreateView):
 class MyEmployeeDocumentDeleteView(LoginRequiredMixin, DeleteView):
 	model = EmployeeDocument
 	template_name = 'employees/employee_document_confirm_delete.html'
+
+
+class MyProfileView(LoginRequiredMixin, DetailView):
+	model = EmployeeProfile
+	template_name = 'employees/my_profile.html'
+	context_object_name = 'employee'
+
+	def get_object(self, queryset=None):
+		return get_object_or_404(EmployeeProfile.objects.select_related('user', 'department', 'position'), user=self.request.user)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['documents'] = EmployeeDocument.objects.filter(user=self.request.user).order_by('-uploaded_at')[:12]
+		context['documents_total'] = EmployeeDocument.objects.filter(user=self.request.user).count()
+		return context
+
+
+class ContractsListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):
+	model = EmployeeDocument
+	template_name = 'employees/contracts_list.html'
+	context_object_name = 'contracts'
+	paginate_by = 50
+
+	def get_queryset(self):
+		qs = EmployeeDocument.objects.filter(document_type=EmployeeDocument.DOC_CONTRACT).select_related(
+			'user',
+			'uploaded_by',
+			'user__employee_profile',
+			'user__employee_profile__department',
+		).order_by('-uploaded_at')
+
+		user = self.request.user
+		if user_is_hr_admin(user):
+			return qs
+		try:
+			profile = user.employee_profile
+		except EmployeeProfile.DoesNotExist:
+			profile = None
+		if profile and profile.department_id:
+			return qs.filter(user__employee_profile__department_id=profile.department_id)
+		return qs.none()
 
 	def get_queryset(self):
 		return EmployeeDocument.objects.filter(user=self.request.user)

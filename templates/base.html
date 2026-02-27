@@ -70,6 +70,9 @@
             <a class="nav-link {% if current == 'core:dashboard' or current == 'core:staff_dashboard' %}active{% endif %}" href="{% if user.is_authenticated and not is_supervisor_plus %}{% url 'core:staff_dashboard' %}{% else %}{% url 'core:dashboard' %}{% endif %}">
                 <i class="fa-solid fa-gauge-high fa-fw"></i> Dashboard
             </a>
+      			<a class="nav-link {% if current == 'core:search' %}active{% endif %}" href="{% url 'core:search' %}">
+      				<i class="fa-solid fa-magnifying-glass fa-fw"></i> Search
+      			</a>
           <a class="nav-link {% if current == 'noticeboard:list' %}active{% endif %}" href="{% url 'noticeboard:list' %}">
                 <i class="fa-solid fa-bullhorn fa-fw"></i> Noticeboard
             </a>
@@ -92,6 +95,9 @@
 
             {% if user.is_authenticated %}
             <div class="nav-category">My Workspace</div>
+      			<a class="nav-link {% if current == 'employees:my_profile' %}active{% endif %}" href="{% url 'employees:my_profile' %}">
+      				<i class="fa-solid fa-id-card fa-fw"></i> My Profile
+      			</a>
             <a class="nav-link {% if current == 'employees:my_documents' or current == 'employees:my_document_upload' %}active{% endif %}" href="{% url 'employees:my_documents' %}">
                 <i class="fa-solid fa-folder-open fa-fw"></i> My Documents
             </a>
@@ -107,6 +113,9 @@
             <a class="nav-link {% if current == 'employees:list' or current == 'employees:create' or current == 'employees:edit' or current == 'employees:documents' or current == 'employees:document_upload' %}active{% endif %}" href="{% url 'employees:list' %}">
                 <i class="fa-solid fa-users fa-fw"></i> Employees
             </a>
+      			<a class="nav-link {% if current == 'employees:contracts' %}active{% endif %}" href="{% url 'employees:contracts' %}">
+      				<i class="fa-solid fa-file-contract fa-fw"></i> Contracts
+      			</a>
             <a class="nav-link {% if current == 'attendance:list' %}active{% endif %}" href="{% url 'attendance:list' %}">
                 <i class="fa-solid fa-clock fa-fw"></i> Attendance
             </a>

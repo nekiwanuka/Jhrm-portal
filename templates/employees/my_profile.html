@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a class="btn btn-outline-secondary btn-sm" href="{% url 'core:dashboard' %}">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back
+  </a>
+  <a class="btn btn-outline-secondary btn-sm" href="{% url 'employees:my_documents' %}">
+    <i class="fa-regular fa-folder-open me-1"></i> My Documents
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Profile</span>
+    <span class="text-muted">{{ employee.employee_id }}</span>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card h-100 mb-0">
+          <div class="card-header">Account</div>
+          <div class="card-body">
+            {% if employee.photo %}
+              <div class="mb-3">
+                <img src="{{ employee.photo.url }}" alt="{{ employee.user.get_full_name|default:employee.user.username }}" class="img-thumbnail" style="max-width: 180px;">
+              </div>
+            {% endif %}
+            <p><strong>Name:</strong> {{ employee.user.get_full_name|default:employee.user.username }}</p>
+            <p><strong>Username:</strong> {{ employee.user.username }}</p>
+            <p><strong>Email:</strong> {{ employee.user.email|default:'-' }}</p>
+            <p class="mb-0"><strong>Phone:</strong> {{ employee.user.phone_number|default:'-' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100 mb-0">
+          <div class="card-header">Organization</div>
+          <div class="card-body">
+            <p><strong>Department:</strong> {{ employee.department|default:'-' }}</p>
+            <p><strong>Position:</strong> {{ employee.position|default:'-' }}</p>
+            <p><strong>Employment Type:</strong> {{ employee.get_employment_type_display }}</p>
+            <p class="mb-0"><strong>Status:</strong> {{ employee.get_status_display }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100 mb-0">
+          <div class="card-header">Personal Details</div>
+          <div class="card-body">
+            <p><strong>Date of Birth:</strong> {{ employee.date_of_birth|date:"Y-m-d"|default:'-' }}</p>
+            <p><strong>Gender:</strong> {{ employee.gender|default:'-' }}</p>
+            <p><strong>Marital Status:</strong> {{ employee.marital_status|default:'-' }}</p>
+            <p><strong>National ID:</strong> {{ employee.national_id|default:'-' }}</p>
+            <p><strong>Passport Number:</strong> {{ employee.passport_number|default:'-' }}</p>
+            <p><strong>TIN:</strong> {{ employee.tin|default:'-' }}</p>
+            <p class="mb-0"><strong>NSSF:</strong> {{ employee.nssf_number|default:'-' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100 mb-0">
+          <div class="card-header">Contact & Banking</div>
+          <div class="card-body">
+            <p><strong>Emergency Contact:</strong> {{ employee.emergency_contact_name|default:'-' }}</p>
+            <p><strong>Emergency Phone:</strong> {{ employee.emergency_contact_phone|default:'-' }}</p>
+            <p><strong>Bank Name:</strong> {{ employee.bank_name|default:'-' }}</p>
+            <p><strong>Account Number:</strong> {{ employee.bank_account_number|default:'-' }}</p>
+            <p class="mb-0"><strong>Branch:</strong> {{ employee.bank_branch|default:'-' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Recent Documents</span>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'employees:my_documents' %}">
+      <i class="fa-regular fa-folder-open me-1"></i> View All ({{ documents_total }})
+    </a>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Uploaded At</th>
+            <th>File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in documents %}
+            <tr>
+              <td>{{ d.get_document_type_display }}</td>
+              <td>{{ d.description|default:'-' }}</td>
+              <td>{{ d.uploaded_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% if d.file %}
+                  <a class="btn btn-sm btn-outline-primary" href="{{ d.file.url }}" target="_blank" rel="noopener">Open</a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-muted">No documents available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -24,6 +24,12 @@
 
   <p class="purpose-form-subtitle mb-3">Create login credentials and complete the employee profile and HR records in one flow.</p>
 
+  {% if has_onboarding_draft %}
+    <div class="alert alert-info">
+    Saved draft loaded. You can continue editing, or <a href="{% url 'employees:create' %}?clear_draft=1">clear the draft</a>.
+    </div>
+  {% endif %}
+
   {% if form.non_field_errors %}
     <div class="alert alert-danger">
       {% for error in form.non_field_errors %}
@@ -176,6 +182,7 @@
     <button class="btn btn-outline-secondary d-none" type="button" id="wizard-prev-btn">Previous Page</button>
     <button class="btn btn-primary" type="button" id="wizard-next-btn">Save & Next Page</button>
     <button class="btn btn-primary d-none" type="submit" id="wizard-submit-btn">Create User & Employee Profile</button>
+	<button class="btn btn-outline-primary" type="submit" name="save_draft" value="1" formnovalidate>Save Draft</button>
     <a class="btn btn-outline-secondary" href="{% url 'employees:list' %}">Cancel</a>
   </div>
 </form>

@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic import DetailView, ListView
+from django.db.models import Q
 
 from .pdf import render_user_manual_pdf
 
@@ -142,6 +143,100 @@ class StaffDashboardView(LoginRequiredMixin, TemplateView):
 
 		context['employee_profile'] = profile
 		context['notices_count'] = Notice.objects.filter(is_public=True).count()
+		return context
+
+
+class GlobalSearchView(LoginRequiredMixin, TemplateView):
+	template_name = 'core/search.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		user = self.request.user
+		q = (self.request.GET.get('q') or '').strip()
+		context['q'] = q
+		if not q:
+			context.update({
+				'employees': [],
+				'documents': [],
+				'notices': [],
+				'leave_requests': [],
+				'weekly_reports': [],
+				'tasks': [],
+			})
+			return context
+
+		is_hr = user_is_hr_admin(user)
+		is_sup = user_is_supervisor_plus(user)
+		dept_id = None
+		try:
+			profile = user.employee_profile
+			dept_id = profile.department_id
+		except EmployeeProfile.DoesNotExist:
+			profile = None
+
+		employees_qs = EmployeeProfile.objects.select_related('user', 'department', 'position')
+		if not is_hr:
+			if is_sup and dept_id:
+				employees_qs = employees_qs.filter(department_id=dept_id)
+			else:
+				employees_qs = employees_qs.filter(user=user)
+		employees_qs = employees_qs.filter(
+			Q(employee_id__icontains=q)
+			| Q(user__username__icontains=q)
+			| Q(user__first_name__icontains=q)
+			| Q(user__last_name__icontains=q)
+			| Q(user__email__icontains=q)
+			| Q(department__name__icontains=q)
+			| Q(position__title__icontains=q)
+		).order_by('employee_id')
+		context['employees'] = list(employees_qs[:10])
+
+		docs_qs = EmployeeDocument.objects.select_related('user', 'uploaded_by').order_by('-uploaded_at')
+		if not is_hr:
+			if is_sup and dept_id:
+				docs_qs = docs_qs.filter(user__employee_profile__department_id=dept_id)
+			else:
+				docs_qs = docs_qs.filter(user=user)
+		docs_qs = docs_qs.filter(
+			Q(description__icontains=q)
+			| Q(document_type__icontains=q)
+			| Q(user__username__icontains=q)
+			| Q(user__first_name__icontains=q)
+			| Q(user__last_name__icontains=q)
+		)
+		context['documents'] = list(docs_qs[:10])
+
+		notices_qs = Notice.objects.filter(is_public=True).filter(Q(title__icontains=q) | Q(content__icontains=q)).order_by('-created_at')
+		context['notices'] = list(notices_qs[:10])
+
+		leave_qs = LeaveRequest.objects.all().order_by('-created_at')
+		if not is_hr:
+			leave_qs = leave_qs.filter(employee=user)
+		leave_qs = leave_qs.filter(Q(reason__icontains=q) | Q(status__icontains=q))
+		context['leave_requests'] = list(leave_qs[:10])
+
+		reports_qs = WeeklyReport.objects.all().order_by('-submitted_at')
+		if not is_hr:
+			reports_qs = reports_qs.filter(employee=user)
+		reports_qs = reports_qs.filter(
+			Q(achievements__icontains=q)
+			| Q(challenges__icontains=q)
+			| Q(next_week_plan__icontains=q)
+			| Q(general_notes__icontains=q)
+		)
+		context['weekly_reports'] = list(reports_qs[:10])
+
+		tasks_qs = Task.objects.all().order_by('-created_at')
+		if not is_hr:
+			tasks_qs = tasks_qs.filter(
+				Q(visibility=Task.VISIBILITY_ALL)
+				| Q(visible_to=user)
+				| Q(assigned_to=user)
+				| Q(created_by=user)
+			)
+		tasks_qs = tasks_qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
+		context['tasks'] = list(tasks_qs[:10])
+
 		return context
 
 
