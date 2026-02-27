@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import password_validation
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -7,6 +8,16 @@ from accounts.models import User
 from accounts.models import BusinessRole
 
 from .models import Department, EmployeeDocument, EmployeeProfile, Position
+
+
+def _validate_upload_size(file_obj, max_bytes: int, label: str):
+    if not file_obj:
+        return
+    size = getattr(file_obj, 'size', None)
+    if size is not None and max_bytes and size > max_bytes:
+        max_mb = max_bytes / (1024 * 1024)
+        actual_mb = size / (1024 * 1024)
+        raise ValidationError(f'{label} is too large ({actual_mb:.1f}MB). Max allowed is {max_mb:.1f}MB.')
 
 
 class DepartmentForm(forms.ModelForm):
@@ -93,11 +104,21 @@ class EmployeeProfileForm(forms.ModelForm):
             raise ValidationError('Selected position must belong to the selected department.')
         return cleaned
 
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        _validate_upload_size(photo, int(getattr(settings, 'MAX_PHOTO_UPLOAD_SIZE_BYTES', 0) or 0), 'Photo')
+        return photo
+
 
 class EmployeeDocumentForm(forms.ModelForm):
     class Meta:
         model = EmployeeDocument
         fields = ['document_type', 'file', 'description']
+
+    def clean_file(self):
+        f = self.cleaned_data.get('file')
+        _validate_upload_size(f, int(getattr(settings, 'MAX_DOCUMENT_UPLOAD_SIZE_BYTES', 0) or 0), 'Document')
+        return f
 
 
 class EmployeeOnboardingForm(EmployeeProfileForm):

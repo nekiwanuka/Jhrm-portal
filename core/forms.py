@@ -1,9 +1,20 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 from .models import BrandingSettings
+
+
+def _validate_upload_size(file_obj, max_bytes: int, label: str):
+    if not file_obj:
+        return
+    size = getattr(file_obj, 'size', None)
+    if size is not None and max_bytes and size > max_bytes:
+        max_mb = max_bytes / (1024 * 1024)
+        actual_mb = size / (1024 * 1024)
+        raise ValidationError(f'{label} is too large ({actual_mb:.1f}MB). Max allowed is {max_mb:.1f}MB.')
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -78,6 +89,16 @@ class BrandingSettingsForm(forms.ModelForm):
 			'footer_bg_color': forms.TextInput(attrs={'type': 'color'}),
 			'footer_text_color': forms.TextInput(attrs={'type': 'color'}),
         }
+
+    def clean_logo(self):
+        logo = self.cleaned_data.get('logo')
+        _validate_upload_size(logo, int(getattr(settings, 'MAX_BRANDING_UPLOAD_SIZE_BYTES', 0) or 0), 'Logo')
+        return logo
+
+    def clean_hr_signature(self):
+        sig = self.cleaned_data.get('hr_signature')
+        _validate_upload_size(sig, int(getattr(settings, 'MAX_BRANDING_UPLOAD_SIZE_BYTES', 0) or 0), 'HR signature')
+        return sig
 
 
 class PublicAccessCodeForm(forms.Form):

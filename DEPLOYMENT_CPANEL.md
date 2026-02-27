@@ -65,6 +65,8 @@ DB_PORT=5432
 DJANGO_SECURE_SSL_REDIRECT=True
 ```
 
+Note: If `DJANGO_SECRET_KEY` is not set and `DJANGO_DEBUG=False`, the app will generate a strong key once and store it in a local `.django_secret_key` file. This avoids accidental outages, but it’s still best practice to explicitly set `DJANGO_SECRET_KEY` in your cPanel environment or `.env`.
+
 For MySQL, set:
 - `DB_ENGINE=django.db.backends.mysql`
 - `DB_PORT=3306`

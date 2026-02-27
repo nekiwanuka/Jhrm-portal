@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+import secrets
+import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -17,8 +20,32 @@ def env_bool_optional(name: str):
         return None
     return os.getenv(name, '').lower() in ('1', 'true', 'yes', 'on')
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
-DEBUG = env_bool('DJANGO_DEBUG', True)
+DEBUG = env_bool('DJANGO_DEBUG', False)
+RUNNING_TESTS = 'test' in sys.argv
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '').strip()
+ALLOW_INSECURE_SECRET_KEY = env_bool('DJANGO_ALLOW_INSECURE_SECRET_KEY', False)
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-local-dev-key'
+    else:
+        # In production, prefer an environment-provided secret key, but fall back to a
+        # stable, file-backed key to avoid accidental outages.
+        secret_key_path = BASE_DIR / '.django_secret_key'
+        try:
+            if secret_key_path.exists():
+                SECRET_KEY = secret_key_path.read_text(encoding='utf-8').strip()
+            else:
+                SECRET_KEY = secrets.token_urlsafe(64)
+                secret_key_path.write_text(SECRET_KEY, encoding='utf-8')
+        except OSError:
+            if not ALLOW_INSECURE_SECRET_KEY:
+                raise ImproperlyConfigured('DJANGO_SECRET_KEY is required when DJANGO_DEBUG is False')
+
+if not DEBUG and not ALLOW_INSECURE_SECRET_KEY:
+    if SECRET_KEY.startswith('django-insecure-') or len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5:
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY must be a long, random value (>=50 chars) in production')
+
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if host.strip()]
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
 
@@ -116,8 +143,19 @@ STATIC_ROOT = Path(os.getenv('DJANGO_STATIC_ROOT', str(BASE_DIR / 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = os.getenv('DJANGO_STATICFILES_STORAGE', 'whitenoise.storage.CompressedManifestStaticFilesStorage')
 
+if RUNNING_TESTS:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(os.getenv('DJANGO_MEDIA_ROOT', str(BASE_DIR / 'media')))
+
+# Upload guardrails (DoS protection + consistent form validation).
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DJANGO_DATA_UPLOAD_MAX_MEMORY_SIZE', str(25 * 1024 * 1024)))
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DJANGO_FILE_UPLOAD_MAX_MEMORY_SIZE', str(5 * 1024 * 1024)))
+
+MAX_DOCUMENT_UPLOAD_SIZE_BYTES = int(os.getenv('DJANGO_MAX_DOCUMENT_UPLOAD_SIZE_BYTES', str(10 * 1024 * 1024)))
+MAX_PHOTO_UPLOAD_SIZE_BYTES = int(os.getenv('DJANGO_MAX_PHOTO_UPLOAD_SIZE_BYTES', str(5 * 1024 * 1024)))
+MAX_BRANDING_UPLOAD_SIZE_BYTES = int(os.getenv('DJANGO_MAX_BRANDING_UPLOAD_SIZE_BYTES', str(2 * 1024 * 1024)))
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
@@ -168,7 +206,28 @@ LOGOUT_REDIRECT_URL = 'core:public_home'
 
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = os.getenv('DJANGO_SESSION_COOKIE_SAMESITE', 'Lax')
+CSRF_COOKIE_SAMESITE = os.getenv('DJANGO_CSRF_COOKIE_SAMESITE', 'Lax')
 X_FRAME_OPTIONS = 'DENY'
+
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', (not DEBUG) and (not RUNNING_TESTS))
+SESSION_COOKIE_SECURE = env_bool('DJANGO_SESSION_COOKIE_SECURE', not DEBUG)
+CSRF_COOKIE_SECURE = env_bool('DJANGO_CSRF_COOKIE_SECURE', not DEBUG)
+
+SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_SECURE_HSTS_SECONDS', '0' if (DEBUG or RUNNING_TESTS) else '31536000'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', (not DEBUG) and (not RUNNING_TESTS))
+SECURE_HSTS_PRELOAD = env_bool('DJANGO_SECURE_HSTS_PRELOAD', False)
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = os.getenv('DJANGO_SECURE_REFERRER_POLICY', 'same-origin')
+SECURE_CROSS_ORIGIN_OPENER_POLICY = os.getenv('DJANGO_SECURE_COOP', 'same-origin')
+
+if RUNNING_TESTS:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
 if env_bool('DJANGO_SECURE_PROXY_SSL_HEADER', True):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

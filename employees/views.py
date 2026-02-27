@@ -386,6 +386,17 @@ class MyEmployeeDocumentDeleteView(LoginRequiredMixin, DeleteView):
 	model = EmployeeDocument
 	template_name = 'employees/employee_document_confirm_delete.html'
 
+	def get_queryset(self):
+		return EmployeeDocument.objects.filter(user=self.request.user)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['cancel_url'] = reverse('employees:my_documents')
+		return context
+
+	def get_success_url(self):
+		return reverse_lazy('employees:my_documents')
+
 
 class MyProfileView(LoginRequiredMixin, DetailView):
 	model = EmployeeProfile
@@ -426,17 +437,6 @@ class ContractsListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListVie
 		if profile and profile.department_id:
 			return qs.filter(user__employee_profile__department_id=profile.department_id)
 		return qs.none()
-
-	def get_queryset(self):
-		return EmployeeDocument.objects.filter(user=self.request.user)
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['cancel_url'] = reverse('employees:my_documents')
-		return context
-
-	def get_success_url(self):
-		return reverse_lazy('employees:my_documents')
 
 
 class DepartmentListView(LoginRequiredMixin, SupervisorPlusRequiredMixin, ListView):

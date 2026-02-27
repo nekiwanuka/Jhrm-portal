@@ -21,6 +21,9 @@ staticfiles/
 .env.*
 !.env.example
 
+# Local secret key (auto-generated when DJANGO_SECRET_KEY is unset)
+.django_secret_key
+
 # Editors/OS
 .vscode/
 .idea/
