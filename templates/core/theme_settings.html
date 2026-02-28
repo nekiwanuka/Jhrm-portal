@@ -152,6 +152,16 @@
         {{ form.text_light_color }}
         {% for error in form.text_light_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
         </div>
+        <div>
+        <label class="form-label" for="{{ form.dashboard_active_feature_color.id_for_label }}">{{ form.dashboard_active_feature_color.label|default:'Dashboard active feature color' }}</label>
+        {{ form.dashboard_active_feature_color }}
+        {% for error in form.dashboard_active_feature_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div>
+        <label class="form-label" for="{{ form.dashboard_section_heading_color.id_for_label }}">{{ form.dashboard_section_heading_color.label|default:'Dashboard section heading color' }}</label>
+        {{ form.dashboard_section_heading_color }}
+        {% for error in form.dashboard_section_heading_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
             </div>
           </div>
 

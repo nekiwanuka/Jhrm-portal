@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% block page_title %}Staff Dashboard{% endblock %}
 {% block content %}
+<style>
+  .dashboard-section-title {
+    color: {{ branding.dashboard_section_heading_color|default:branding.primary_color|default:'#2563eb' }} !important;
+  }
+  .dashboard-active-feature-icon {
+    background-color: {{ branding.dashboard_active_feature_color|default:'#198754' }}1A !important;
+    color: {{ branding.dashboard_active_feature_color|default:'#198754' }} !important;
+  }
+</style>
 <div class="row g-4 mb-4">
   <div class="col-md-4 col-lg-3">
     <div class="card h-100 border-0 shadow-sm">
@@ -47,7 +56,7 @@
   <div class="col-md-4 col-lg-3">
     <div class="card h-100 border-0 shadow-sm">
       <div class="card-body d-flex align-items-center">
-        <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle me-3">
+        <div class="dashboard-active-feature-icon p-3 rounded-circle me-3">
           <i class="fa-solid fa-file-pen fa-xl"></i>
         </div>
         <div>
@@ -63,7 +72,7 @@
   <div class="col-md-6">
     <div class="card border-0 shadow-sm h-100">
       <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
-        <h6 class="m-0 fw-bold text-primary">My Tasks</h6>
+        <h6 class="m-0 fw-bold dashboard-section-title">My Tasks</h6>
       </div>
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -82,7 +91,7 @@
   <div class="col-md-6">
     <div class="card border-0 shadow-sm h-100">
       <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
-        <h6 class="m-0 fw-bold text-primary">My Profile</h6>
+        <h6 class="m-0 fw-bold dashboard-section-title">My Profile</h6>
       </div>
       <div class="card-body">
         {% if employee_profile %}
@@ -101,7 +110,7 @@
 
 <div class="card border-0 shadow-sm">
   <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
-    <h6 class="m-0 fw-bold text-primary">Quick Actions</h6>
+    <h6 class="m-0 fw-bold dashboard-section-title">Quick Actions</h6>
   </div>
   <div class="card-body d-flex flex-wrap gap-2">
     <a href="{% url 'leave_mgmt:create' %}" class="btn btn-primary btn-sm">Apply for Leave</a>

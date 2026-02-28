@@ -24,6 +24,8 @@ class BrandingSettings(models.Model):
 	DEFAULT_TEXT_MAIN_COLOR = '#1e293b'
 	DEFAULT_TEXT_MUTED_COLOR = '#64748b'
 	DEFAULT_TEXT_LIGHT_COLOR = '#f8fafc'
+	DEFAULT_DASHBOARD_ACTIVE_FEATURE_COLOR = '#198754'
+	DEFAULT_DASHBOARD_SECTION_HEADING_COLOR = '#2563eb'
 	DEFAULT_FOOTER_TEXT_COLOR = '#ffffff'
 	DEFAULT_FOOTER_LINK_TEXT = 'DEVTOWN TECHNOLOGIES'
 	DEFAULT_FOOTER_LINK_URL = 'https://www.devtownhosting.com'
@@ -49,6 +51,8 @@ class BrandingSettings(models.Model):
 	text_main_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MAIN_COLOR, validators=[hex_color_validator])
 	text_muted_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MUTED_COLOR, validators=[hex_color_validator])
 	text_light_color = models.CharField(max_length=7, default=DEFAULT_TEXT_LIGHT_COLOR, validators=[hex_color_validator])
+	dashboard_active_feature_color = models.CharField(max_length=7, default=DEFAULT_DASHBOARD_ACTIVE_FEATURE_COLOR, validators=[hex_color_validator])
+	dashboard_section_heading_color = models.CharField(max_length=7, default=DEFAULT_DASHBOARD_SECTION_HEADING_COLOR, validators=[hex_color_validator])
 
 	login_show_branding = models.BooleanField(default=True)
 	login_show_logo = models.BooleanField(default=False)
@@ -95,6 +99,8 @@ class BrandingSettings(models.Model):
 		self.text_main_color = self.DEFAULT_TEXT_MAIN_COLOR
 		self.text_muted_color = self.DEFAULT_TEXT_MUTED_COLOR
 		self.text_light_color = self.DEFAULT_TEXT_LIGHT_COLOR
+		self.dashboard_active_feature_color = self.DEFAULT_DASHBOARD_ACTIVE_FEATURE_COLOR
+		self.dashboard_section_heading_color = self.DEFAULT_DASHBOARD_SECTION_HEADING_COLOR
 		self.logo = None
 		self.company_address = ''
 		self.company_phone = ''
