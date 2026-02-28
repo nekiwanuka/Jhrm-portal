@@ -257,6 +257,12 @@
               Preview Card
             </div>
             <div class="card-body">
+              <h6 id="preview-dashboard-section-title" class="fw-bold mb-2" style="color: {{ branding.dashboard_section_heading_color|default:branding.primary_color }};">Dashboard Section Heading</h6>
+              <div class="d-inline-flex align-items-center mb-2 px-2 py-1 rounded" id="preview-dashboard-active-feature" style="background: {{ branding.dashboard_active_feature_color|default:'#198754' }}1A; color: {{ branding.dashboard_active_feature_color|default:'#198754' }};">
+                <i class="fa-solid fa-circle-check me-1"></i>
+                <span>Active Feature</span>
+              </div>
+              <br>
               <button id="preview-primary-btn" class="btn btn-sm text-white" style="background: {{ branding.primary_color }}; border-color: {{ branding.primary_color }};">Primary</button>
               <span class="badge ms-2" id="preview-accent-badge" style="background: {{ branding.accent_color }};">Accent</span>
             </div>
@@ -280,6 +286,8 @@
   const accentInput = document.getElementById('id_accent_color');
   const sidebarInput = document.getElementById('id_sidebar_color');
   const bodyBgInput = document.getElementById('id_body_bg_color');
+  const dashboardActiveFeatureInput = document.getElementById('id_dashboard_active_feature_color');
+  const dashboardSectionHeadingInput = document.getElementById('id_dashboard_section_heading_color');
   const footerEnabledInput = document.getElementById('id_footer_enabled');
   const footerLeftInput = document.getElementById('id_footer_left_text');
   const footerRightInput = document.getElementById('id_footer_right_text');
@@ -293,6 +301,8 @@
   const previewRoot = document.getElementById('theme-preview');
   const previewPrimaryBtn = document.getElementById('preview-primary-btn');
   const previewAccentBadge = document.getElementById('preview-accent-badge');
+  const previewDashboardActiveFeature = document.getElementById('preview-dashboard-active-feature');
+  const previewDashboardSectionTitle = document.getElementById('preview-dashboard-section-title');
   const previewCard = previewPrimaryBtn.closest('.card');
   const previewHeader = previewCard.querySelector('.card-header');
   const previewLogoImg = document.getElementById('preview-logo-img');
@@ -345,6 +355,13 @@
       };
     }
     if (accentInput) previewAccentBadge.style.backgroundColor = accentInput.value;
+    if (dashboardActiveFeatureInput && previewDashboardActiveFeature) {
+      previewDashboardActiveFeature.style.color = dashboardActiveFeatureInput.value;
+      previewDashboardActiveFeature.style.backgroundColor = `${dashboardActiveFeatureInput.value}1A`;
+    }
+    if (dashboardSectionHeadingInput && previewDashboardSectionTitle) {
+      previewDashboardSectionTitle.style.color = dashboardSectionHeadingInput.value;
+    }
     if (secondaryInput) {
       previewCard.style.borderColor = secondaryInput.value;
       previewHeader.style.borderBottomColor = secondaryInput.value;
@@ -406,7 +423,7 @@
     });
   }
 
-  [appNameInput, taglineInput, primaryInput, primaryHoverInput, secondaryInput, accentInput, sidebarInput, bodyBgInput, footerEnabledInput, footerLeftInput, footerRightInput, footerLinkTextInput, footerLinkUrlInput, footerBgInput, footerTextInput].forEach(function (input) {
+  [appNameInput, taglineInput, primaryInput, primaryHoverInput, secondaryInput, accentInput, sidebarInput, bodyBgInput, dashboardActiveFeatureInput, dashboardSectionHeadingInput, footerEnabledInput, footerLeftInput, footerRightInput, footerLinkTextInput, footerLinkUrlInput, footerBgInput, footerTextInput].forEach(function (input) {
     if (input) {
       input.addEventListener('input', applyPreview);
       input.addEventListener('change', applyPreview);
