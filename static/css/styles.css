@@ -723,9 +723,9 @@ form textarea:focus {
 }
 
 .nav-link.active {
-  background-color: rgb(59 130 246 / 0.18);
+  background-color: var(--sidebar-active-link-color);
   color: #fff;
-  box-shadow: inset 3px 0 0 0 var(--accent-color);
+  box-shadow: inset 3px 0 0 0 rgb(255 255 255 / 0.25);
 }
 
 .nav-category {

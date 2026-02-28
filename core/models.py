@@ -22,6 +22,7 @@ class BrandingSettings(models.Model):
 	DEFAULT_SIDEBAR_COLOR = '#0f172a'
 	DEFAULT_SIDEBAR_HOVER_COLOR = '#1e293b'
 	DEFAULT_SIDEBAR_HEADER_COLOR = '#94a3b8'
+	DEFAULT_SIDEBAR_ACTIVE_LINK_COLOR = '#3b82f6'
 	DEFAULT_BODY_BG_COLOR = '#f1f5f9'
 	DEFAULT_TEXT_MAIN_COLOR = '#1e293b'
 	DEFAULT_TEXT_MUTED_COLOR = '#64748b'
@@ -51,6 +52,7 @@ class BrandingSettings(models.Model):
 	sidebar_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_COLOR, validators=[hex_color_validator])
 	sidebar_hover_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_HOVER_COLOR, validators=[hex_color_validator])
 	sidebar_header_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_HEADER_COLOR, validators=[hex_color_validator])
+	sidebar_active_link_color = models.CharField(max_length=7, default=DEFAULT_SIDEBAR_ACTIVE_LINK_COLOR, validators=[hex_color_validator])
 	body_bg_color = models.CharField(max_length=7, default=DEFAULT_BODY_BG_COLOR, validators=[hex_color_validator])
 	text_main_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MAIN_COLOR, validators=[hex_color_validator])
 	text_muted_color = models.CharField(max_length=7, default=DEFAULT_TEXT_MUTED_COLOR, validators=[hex_color_validator])
@@ -101,6 +103,7 @@ class BrandingSettings(models.Model):
 		self.sidebar_color = self.DEFAULT_SIDEBAR_COLOR
 		self.sidebar_hover_color = self.DEFAULT_SIDEBAR_HOVER_COLOR
 		self.sidebar_header_color = self.DEFAULT_SIDEBAR_HEADER_COLOR
+		self.sidebar_active_link_color = self.DEFAULT_SIDEBAR_ACTIVE_LINK_COLOR
 		self.body_bg_color = self.DEFAULT_BODY_BG_COLOR
 		self.text_main_color = self.DEFAULT_TEXT_MAIN_COLOR
 		self.text_muted_color = self.DEFAULT_TEXT_MUTED_COLOR
