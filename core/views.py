@@ -277,6 +277,13 @@ class ThemeSettingsUpdateView(LoginRequiredMixin, HRAdminRequiredMixin, UpdateVi
 	template_name = 'core/theme_settings.html'
 	success_url = reverse_lazy('core:theme_settings')
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['preview_active_feature_count'] = EmployeeProfile.objects.filter(
+			status=EmployeeProfile.STATUS_ACTIVE
+		).count()
+		return context
+
 	def get_object(self, queryset=None):
 		return BrandingSettings.get_solo()
 
