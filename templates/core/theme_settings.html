@@ -258,11 +258,17 @@
             </div>
             <div class="card-body">
               <h6 id="preview-dashboard-section-title" class="fw-bold mb-2" style="color: {{ branding.dashboard_section_heading_color|default:branding.primary_color }};">Dashboard Section Heading</h6>
-              <div class="d-inline-flex align-items-center mb-2 px-2 py-1 rounded" id="preview-dashboard-active-feature" style="background: {{ branding.dashboard_active_feature_color|default:'#198754' }}1A; color: {{ branding.dashboard_active_feature_color|default:'#198754' }};">
-                <i class="fa-solid fa-circle-check me-1"></i>
-                <span>Active Feature</span>
+              <div class="card h-100 border-0 shadow-sm mb-2">
+                <div class="card-body d-flex align-items-center">
+                  <div id="preview-dashboard-active-feature-icon" class="p-3 rounded-circle me-3" style="background: {{ branding.dashboard_active_feature_color|default:'#198754' }}1A; color: {{ branding.dashboard_active_feature_color|default:'#198754' }};">
+                    <i class="fa-solid fa-user-check fa-xl"></i>
+                  </div>
+                  <div>
+                    <h6 class="text-muted text-uppercase small fw-bold mb-1">Active Status</h6>
+                    <h3 class="mb-0 fw-bold text-dark">24</h3>
+                  </div>
+                </div>
               </div>
-              <br>
               <button id="preview-primary-btn" class="btn btn-sm text-white" style="background: {{ branding.primary_color }}; border-color: {{ branding.primary_color }};">Primary</button>
               <span class="badge ms-2" id="preview-accent-badge" style="background: {{ branding.accent_color }};">Accent</span>
             </div>
@@ -301,7 +307,7 @@
   const previewRoot = document.getElementById('theme-preview');
   const previewPrimaryBtn = document.getElementById('preview-primary-btn');
   const previewAccentBadge = document.getElementById('preview-accent-badge');
-  const previewDashboardActiveFeature = document.getElementById('preview-dashboard-active-feature');
+  const previewDashboardActiveFeatureIcon = document.getElementById('preview-dashboard-active-feature-icon');
   const previewDashboardSectionTitle = document.getElementById('preview-dashboard-section-title');
   const previewCard = previewPrimaryBtn.closest('.card');
   const previewHeader = previewCard.querySelector('.card-header');
@@ -355,9 +361,9 @@
       };
     }
     if (accentInput) previewAccentBadge.style.backgroundColor = accentInput.value;
-    if (dashboardActiveFeatureInput && previewDashboardActiveFeature) {
-      previewDashboardActiveFeature.style.color = dashboardActiveFeatureInput.value;
-      previewDashboardActiveFeature.style.backgroundColor = `${dashboardActiveFeatureInput.value}1A`;
+    if (dashboardActiveFeatureInput && previewDashboardActiveFeatureIcon) {
+      previewDashboardActiveFeatureIcon.style.color = dashboardActiveFeatureInput.value;
+      previewDashboardActiveFeatureIcon.style.backgroundColor = `${dashboardActiveFeatureInput.value}1A`;
     }
     if (dashboardSectionHeadingInput && previewDashboardSectionTitle) {
       previewDashboardSectionTitle.style.color = dashboardSectionHeadingInput.value;
