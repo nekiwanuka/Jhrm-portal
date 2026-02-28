@@ -40,6 +40,22 @@
       --footer-banner-space: 0px;
       {% endif %}
     }
+
+    .sidebar .nav-link:hover {
+      background-color: var(--sidebar-hover-color) !important;
+      color: #fff !important;
+    }
+
+    .sidebar .nav-link.active {
+      background-color: var(--sidebar-active-link-color) !important;
+      color: #fff !important;
+      box-shadow: inset 3px 0 0 0 rgb(255 255 255 / 0.25) !important;
+    }
+
+    .sidebar .nav-category,
+    .sidebar h5 {
+      color: var(--sidebar-header-color) !important;
+    }
   </style>
 </head>
 <body>
