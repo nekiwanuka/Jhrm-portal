@@ -133,6 +133,16 @@
                 {% for error in form.sidebar_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
               </div>
               <div>
+                <label class="form-label" for="{{ form.sidebar_hover_color.id_for_label }}">{{ form.sidebar_hover_color.label|default:'Sidebar hover color' }}</label>
+                {{ form.sidebar_hover_color }}
+                {% for error in form.sidebar_hover_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label class="form-label" for="{{ form.sidebar_header_color.id_for_label }}">{{ form.sidebar_header_color.label|default:'Sidebar header color' }}</label>
+                {{ form.sidebar_header_color }}
+                {% for error in form.sidebar_header_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
                 <label class="form-label" for="{{ form.body_bg_color.id_for_label }}">{{ form.body_bg_color.label }}</label>
                 {{ form.body_bg_color }}
                 {% for error in form.body_bg_color.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
@@ -250,6 +260,8 @@
               <strong id="preview-app-name">{{ branding.app_name }}</strong>
             </div>
             <small id="preview-tagline" style="color:#cbd5e1;">{{ branding.tagline }}</small>
+            <div id="preview-sidebar-header" class="mt-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: {{ branding.sidebar_header_color|default:'#94a3b8' }};">Main</div>
+            <div id="preview-sidebar-link" class="mt-2 rounded px-2 py-2" style="background: {{ branding.sidebar_hover_color|default:'#1e293b' }}; color: #fff; font-size: 0.95rem;">Dashboard</div>
           </div>
 
           <div class="card mb-0" style="border-color: {{ branding.secondary_color }};">
@@ -291,6 +303,8 @@
   const secondaryInput = document.getElementById('id_secondary_color');
   const accentInput = document.getElementById('id_accent_color');
   const sidebarInput = document.getElementById('id_sidebar_color');
+  const sidebarHoverInput = document.getElementById('id_sidebar_hover_color');
+  const sidebarHeaderInput = document.getElementById('id_sidebar_header_color');
   const bodyBgInput = document.getElementById('id_body_bg_color');
   const dashboardActiveFeatureInput = document.getElementById('id_dashboard_active_feature_color');
   const dashboardSectionHeadingInput = document.getElementById('id_dashboard_section_heading_color');
@@ -304,6 +318,8 @@
   const previewAppName = document.getElementById('preview-app-name');
   const previewTagline = document.getElementById('preview-tagline');
   const previewSidebar = document.getElementById('preview-sidebar');
+  const previewSidebarHeader = document.getElementById('preview-sidebar-header');
+  const previewSidebarLink = document.getElementById('preview-sidebar-link');
   const previewRoot = document.getElementById('theme-preview');
   const previewPrimaryBtn = document.getElementById('preview-primary-btn');
   const previewAccentBadge = document.getElementById('preview-accent-badge');
@@ -343,6 +359,8 @@
     if (taglineInput) previewTagline.textContent = taglineInput.value || 'Tagline';
 
     if (sidebarInput) previewSidebar.style.backgroundColor = sidebarInput.value;
+    if (sidebarHoverInput && previewSidebarLink) previewSidebarLink.style.backgroundColor = sidebarHoverInput.value;
+    if (sidebarHeaderInput && previewSidebarHeader) previewSidebarHeader.style.color = sidebarHeaderInput.value;
     if (bodyBgInput) previewRoot.style.backgroundColor = bodyBgInput.value;
     if (primaryInput) {
       previewPrimaryBtn.style.backgroundColor = primaryInput.value;
@@ -429,7 +447,7 @@
     });
   }
 
-  [appNameInput, taglineInput, primaryInput, primaryHoverInput, secondaryInput, accentInput, sidebarInput, bodyBgInput, dashboardActiveFeatureInput, dashboardSectionHeadingInput, footerEnabledInput, footerLeftInput, footerRightInput, footerLinkTextInput, footerLinkUrlInput, footerBgInput, footerTextInput].forEach(function (input) {
+  [appNameInput, taglineInput, primaryInput, primaryHoverInput, secondaryInput, accentInput, sidebarInput, sidebarHoverInput, sidebarHeaderInput, bodyBgInput, dashboardActiveFeatureInput, dashboardSectionHeadingInput, footerEnabledInput, footerLeftInput, footerRightInput, footerLinkTextInput, footerLinkUrlInput, footerBgInput, footerTextInput].forEach(function (input) {
     if (input) {
       input.addEventListener('input', applyPreview);
       input.addEventListener('change', applyPreview);

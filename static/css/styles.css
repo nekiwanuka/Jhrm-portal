@@ -718,7 +718,7 @@ form textarea:focus {
 }
 
 .nav-link:hover {
-  background-color: rgb(255 255 255 / 0.08);
+  background-color: var(--sidebar-hover-color);
   color: #fff;
 }
 
@@ -732,7 +732,7 @@ form textarea:focus {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #64748b;
+  color: var(--sidebar-header-color);
   margin: 1.1rem 0.7rem 0.6rem;
   font-weight: 600;
 }
